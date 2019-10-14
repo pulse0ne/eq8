@@ -1,0 +1,105 @@
+// noinspection CssUnknownTarget
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Roboto'), local('Roboto-Regular'), url('~@/styles/fonts/roboto.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+// noinspection CssUnknownTarget
+@font-face {
+  font-family: 'eq8';
+  src: url('~@/styles/fonts/eq8.ttf') format('truetype'), url('~@/styles/fonts/eq8.woff') format('woff'), url('~@/styles/fonts/eq8.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+i, .icomoon-liga {
+  // noinspection CssNoGenericFontName
+  font-family: 'eq8' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Enable Ligatures ================ */
+  letter-spacing: 0;
+  -webkit-font-feature-settings: "liga";
+  -moz-font-feature-settings: "liga=1";
+  -moz-font-feature-settings: "liga";
+  font-feature-settings: "liga";
+  -webkit-font-variant-ligatures: discretionary-ligatures;
+  font-variant-ligatures: discretionary-ligatures;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.eq8-clearclose:before {
+  content: "\e900";
+}
+
+.eq8-save:before {
+  content: "\e901";
+}
+
+.eq8-tonality:before {
+  content: "\e902";
+}
+
+.eq8-arrow_drop_down:before {
+  content: "\e903";
+}
+
+.eq8-arrow_drop_up:before {
+  content: "\e904";
+}
+
+.eq8-arrow_left:before {
+  content: "\e905";
+}
+
+.eq8-arrow_right:before {
+  content: "\e906";
+}
+
+.eq8-delete:before {
+  content: "\e90f";
+}
+
+.eq8-toggle_off:before {
+  content: "\e907";
+}
+
+.eq8-toggle_on:before {
+  content: "\e908";
+}
+
+.eq8-highpass:before {
+  content: "\e909";
+}
+
+.eq8-highshelf:before {
+  content: "\e90a";
+}
+
+.eq8-lowpass:before {
+  content: "\e90b";
+}
+
+.eq8-lowshelf:before {
+  content: "\e90c";
+}
+
+.eq8-notch:before {
+  content: "\e90d";
+}
+
+.eq8-peaking:before {
+  content: "\e90e";
+}

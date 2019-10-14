@@ -1,0 +1,24 @@
+$background: #18191a;
+
+$accent-color: rgb(255, 195, 14);
+$track-color: rgb(85, 89, 92);
+$section-color: rgba(255, 255, 255, 0.1);
+$selected-section-color: rgb(240, 232, 220);
+
+$disabled-color: rgb(180, 180, 180);
+
+// graph colors
+$graph-line-color: rgb(64, 64, 64);
+$graph-line-bright-color: rgb(92, 92, 92);
+$graph-text-color: rgb(128, 128, 128);
+$line-color: rgb(9, 184, 240);
+
+// export for access in js
+// noinspection CssInvalidPseudoSelector,CssUnknownProperty
+:export {
+  accent: $accent-color;
+  graphLine: $graph-line-color;
+  graphLineBright: $graph-line-bright-color;
+  graphText: $graph-text-color;
+  line: $line-color;
+}
