@@ -84,7 +84,7 @@ export default {
     NumberEditLabel,
     Checkbox
   },
-  data () {
+  data() {
     return {
       dialSize: 55,
       testVal: 0,
@@ -99,49 +99,57 @@ export default {
       frFilters: []
     };
   },
+  created() {
+    // eslint-disable-next-line
+    console.log('created', browser);
+    browser.runtime.sendMessage({ type: 'GET::STATE' }).then((state) => {
+      // eslint-disable-next-line
+      console.log(state);
+    });
+  },
   methods: {
-    gainDialHandler (value) {
+    gainDialHandler(value) {
       this.gainValue = value;
     },
-    qDialHandler (value) {
+    qDialHandler(value) {
       this.qValue = value;
     },
-    freqDialHandler (value) {
+    freqDialHandler(value) {
       this.freqValue = value;
     },
-    testSelectedHandler (option) {
+    testSelectedHandler(option) {
       this.testSelected = option;
       this.editingFilterType = option;
     },
-    freqInputHandler (value) {
+    freqInputHandler(value) {
       this.freqValue = (Math.log10(value / this.nyquist) / Math.log10(this.nyquist / this.freqStart)) + 1;
     },
-    toFixed (value) {
+    toFixed(value) {
       return value.toFixed(2);
     }
   },
   computed: {
-    nyquist () {
+    nyquist() {
       return this.frAudioContext.sampleRate / 2;
     },
-    fixedFrequency () {
+    fixedFrequency() {
       const f = this.freqValue;
       const o = Math.log10(this.nyquist / this.freqStart);
       return this.nyquist * Math.pow(10, o * (f - 1));
     },
-    freqLabel () {
+    freqLabel() {
       const f = this.fixedFrequency;
       return f >= 1000 ? `${(f / 1000).toFixed(2)} kHz` : `${f.toFixed(2)} Hz`;
     },
-    gainDisabled () {
+    gainDisabled() {
       return !this.editingFilterType.gainEnabled;
     },
-    qDisabled () {
+    qDisabled() {
       return !this.editingFilterType.qEnabled;
     }
   },
   watch: {
-    fixedFrequency () {
+    fixedFrequency() {
       // window.requestAnimationFrame(this.draw);
     }
   }

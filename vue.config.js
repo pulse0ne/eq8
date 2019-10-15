@@ -4,5 +4,6 @@ module.exports = {
   },
   outputDir: 'extension/popup',
   indexPath: 'popup.html',
-  productionSourceMap: false
+  productionSourceMap: false,
+  publicPath: ''
 };

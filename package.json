@@ -1,11 +1,13 @@
 {
   "name": "eq8",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "start": "web-ext run --source-dir ./extension --verbose --no-config-discovery",
+    "build-watch": "vue-cli-service build --watch"
   },
   "dependencies": {
     "vue": "^2.6.10"
@@ -20,7 +22,8 @@
     "lint-staged": "^8.1.5",
     "sass": "^1.23.0",
     "sass-loader": "^8.0.0",
-    "vue-template-compiler": "^2.6.10"
+    "vue-template-compiler": "^2.6.10",
+    "web-ext": "^3.2.0"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"
