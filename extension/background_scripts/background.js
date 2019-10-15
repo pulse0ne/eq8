@@ -4,7 +4,7 @@ const contentScripts = [];
 const defaultFilters = [
   {
     id: 1,
-    frequency: 64,
+    frequency: 46,
     gain: 0.0,
     q: 1.0,
     type: 'lowpass',
@@ -12,7 +12,7 @@ const defaultFilters = [
   },
   {
     id: 2,
-    frequency: 100,
+    frequency: 215,
     gain: 0.0,
     q: 1.0,
     type: 'lowshelf',
@@ -20,7 +20,7 @@ const defaultFilters = [
   },
   {
     id: 3,
-    frequency: 800,
+    frequency: 1000,
     gain: 0.0,
     q: 1.0,
     type: 'peaking',
@@ -28,7 +28,7 @@ const defaultFilters = [
   },
   {
     id: 4,
-    frequency: 10000,
+    frequency: 4642,
     gain: 0.0,
     q: 1.0,
     type: 'peaking',
@@ -65,7 +65,7 @@ const defaultFilters = [
     q: 1.0,
     type: 'highpass',
     enabled: false
-  },
+  }
 ];
 
 const state = {
@@ -130,27 +130,27 @@ $storage.get([STORAGE_KEY])
 
       port.onMessage.addListener(msg => {
         switch (msg.type) {
-          case 'GET::STATE':
-            port.postMessage({ type: 'SET::STATE', state });
-            break;
-          case 'SET::FILTER':
-            const id = msg.filter.id;
-            const f = state.filters.find(f => f.id === id);
-            f.frequency = msg.filter.frequency;
-            f.gain = msg.filter.gain;
-            f.q = msg.filter.q;
-            f.type = msg.filter.type;
-            f.enabled = msg.filter.enabled;
-            broadcastMessage({ type: 'SET::STATE', state });
-            break;
-          case 'SET::ENABLED':
-            state.enabled = msg.enabled;
-            browser.browserAction.setIcon({ path: state.enabled ? iconsSelected : icons });
-            broadcastMessage({ type: 'SET::STATE', state });
-            break;
-          default:
-            console.error('Unrecognized message: ' + msg);
-            break;
+        case 'GET::STATE':
+          port.postMessage({ type: 'SET::STATE', state });
+          break;
+        case 'SET::FILTER':
+          const id = msg.filter.id;
+          const f = state.filters.find(f => f.id === id);
+          f.frequency = msg.filter.frequency;
+          f.gain = msg.filter.gain;
+          f.q = msg.filter.q;
+          f.type = msg.filter.type;
+          f.enabled = msg.filter.enabled;
+          broadcastMessage({ type: 'SET::STATE', state });
+          break;
+        case 'SET::ENABLED':
+          state.enabled = msg.enabled;
+          browser.browserAction.setIcon({ path: state.enabled ? iconsSelected : icons });
+          broadcastMessage({ type: 'SET::STATE', state });
+          break;
+        default:
+          console.error('Unrecognized message: ' + msg);
+          break;
         }
       });
     });
@@ -171,4 +171,3 @@ $storage.get([STORAGE_KEY])
       return Promise.resolve();
     });
   });
-

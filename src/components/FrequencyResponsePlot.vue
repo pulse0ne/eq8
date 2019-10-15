@@ -1,12 +1,16 @@
 <template>
     <div class="canvas-wrapper" style="width: 600px; height: 250px;">
       <canvas ref="grid" id="grid" width="600px" height="250px"></canvas>
-      <canvas ref="graph" id="graph" width="600px" height="250px"></canvas>
+      <canvas ref="graph" id="graph" width="600px" height="250px" @mousedown="mousedown" @mouseup="mouseup" @mousemove="mousemove"></canvas>
     </div>
 </template>
 
 <script>
 import colors from '../styles/_colors.scss';
+
+const TWO_PI = 2.0 * Math.PI;
+
+const HANDLE_RADIUS = 8;
 
 const FREQ_LINES = {
   '100': 100,
@@ -25,15 +29,23 @@ export default {
   },
   data () {
     return {
-      drawing: null
+      drawing: null,
+      filterNodes: {},
+      handleLocations: {} // TODO: track handle locations for event hitboxes
     };
+  },
+  created () {
+    for (let i = 1; i <= 8; ++i) {
+      this.filterNodes[String(i)] = this.context.createBiquadFilter();
+      if (i > 1) this.filterNodes[String(i)].connect(this.filterNodes[String(i - 1)]);
+      if (i === 7) this.filterNodes[String(i)].connect(this.context.destination);
+    }
   },
   mounted () {
     this.drawing = this.$refs.graph.getContext('2d');
     this.gridDrawing = this.$refs.grid.getContext('2d');
     const { width, height } = this.$refs.grid;
     this.drawGrid(width, height);
-    window.requestAnimationFrame(this.draw);
   },
   methods: {
     drawGrid (width, height) {
@@ -45,6 +57,7 @@ export default {
       const m = width / Math.log10(this.nyquist / this.freqStart);
       for (let i = 1, j = this.freqStart; j < this.nyquist; ++i, j = Math.pow(10, i)) {
         [1, 2, 3, 4, 5, 6, 7, 8, 9].forEach(p => {
+          if (i <= 1 && p === 1) return;
           let x = Math.floor(m * Math.log10(p * j / this.freqStart)) + 0.5;
           this.gridDrawing.beginPath();
           this.gridDrawing.lineWidth = 1;
@@ -77,51 +90,74 @@ export default {
         this.gridDrawing.strokeText(db.toFixed(0), 10.5, y + 0.5);
       }
     },
+    drawHandles (width, height, m, filters, yVals) {
+      const draw = this.drawing;
+
+      filters.forEach(f => {
+        console.log(f.frequency);
+        const x = Math.floor(m * Math.log10(f.frequency / this.freqStart));
+
+        draw.strokeStyle = colors.accent;
+        draw.lineWidth = 2;
+        draw.beginPath();
+        draw.arc(x, yVals[x], HANDLE_RADIUS, 0, TWO_PI);
+        draw.stroke();
+
+        draw.lineWidth = 1;
+        draw.textAlign = 'center';
+        draw.strokeText(f.id, x, yVals[x] + HANDLE_RADIUS / 2);
+
+        // TODO: update handle location
+      });
+    },
     draw () {
       if (!this.drawing) return;
       const { width, height } = this.$refs.graph;
 
       this.drawing.clearRect(0, 0, width, height);
 
-      // test
-      const filter1 = this.context.createBiquadFilter();
-      const filter2 = this.context.createBiquadFilter();
-      filter1.connect(filter2);
-      filter2.connect(this.context.destination);
-
       const freqHz = new Float32Array(width);
-      const magResponse1 = new Float32Array(width);
-      const magResponse2 = new Float32Array(width);
-
-      filter1.frequency.value = 100;
-      filter1.gain.value = -10.0;
-      filter1.q = 10.0;
-      filter1.type = 'peaking';
-
-      filter2.frequency.value = 10000;
-      filter2.gain.value = 12;
-      filter2.q = 0.1;
-      filter2.type = 'peaking';
-
       const m = width / Math.log10(this.nyquist / this.freqStart);
       for (let x = 0; x < width; ++x) {
         freqHz[x] = Math.pow(10, (x / m)) * this.freqStart;
       }
-      filter1.getFrequencyResponse(freqHz, magResponse1, new Float32Array(width));
-      filter2.getFrequencyResponse(freqHz, magResponse2, new Float32Array(width));
+
+      const magRes = [];
+      const enabledFilters = this.filters.filter(f => f.enabled);
+      enabledFilters.forEach(filter => {
+        const filterNode = this.filterNodes[filter.id];
+
+        filterNode.frequency.value = filter.frequency;
+        filterNode.gain.value = filter.gain;
+        filterNode.Q.value = filter.q;
+        filterNode.type = filter.type;
+        const mr = new Float32Array(width);
+        filterNode.getFrequencyResponse(freqHz, mr, new Float32Array(width));
+
+        magRes.push(mr);
+      });
 
       this.drawing.beginPath();
       this.drawing.lineWidth = 2;
       this.drawing.strokeStyle = colors.line;
-      this.drawing.moveTo(0, height / 2);
+      const yVals = [];
       for (let i = 0; i < width; ++i) {
-        let response = magResponse1[i] * magResponse2[i];
-        let dbResponse = 20.0 * Math.log10(Math.abs(response));
+        let response = magRes.reduce((a, c) => a * c, 1);
+        let dbResponse = 20.0 * Math.log10(Math.abs(response) || 1);
         const y = (0.5 * height) - ((0.5 * height) / DB_SCALE) * dbResponse;
-        this.drawing.lineTo(i, y);
+        i === 0 ? this.drawing.moveTo(i, y) : this.drawing.lineTo(i, y);
+        yVals.push(y);
       }
-      // this.drawing.lineTo(width, height / 2);
       this.drawing.stroke();
+
+      console.log(yVals);
+      this.drawHandles(width, height, m, enabledFilters, yVals);
+    },
+    mousedown ($event) {},
+    mouseup ($event) {},
+    mousemove ($event) {
+      const { offsetX, offsetY } = $event;
+      console.log(offsetX, offsetY);
     }
   },
   computed: {
@@ -132,6 +168,7 @@ export default {
   watch: {
     filters () {
       window.requestAnimationFrame(this.draw);
+      console.log('redraw:filters');
     }
   }
 };

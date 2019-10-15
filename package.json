@@ -7,7 +7,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "start": "web-ext run --source-dir ./extension --verbose --no-config-discovery",
-    "build-watch": "vue-cli-service build --watch"
+    "build:watch": "vue-cli-service build --watch"
   },
   "dependencies": {
     "vue": "^2.6.10"

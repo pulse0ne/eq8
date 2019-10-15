@@ -5,5 +5,8 @@ module.exports = {
   outputDir: 'extension/popup',
   indexPath: 'popup.html',
   productionSourceMap: false,
-  publicPath: ''
+  publicPath: '',
+  configureWebpack: {
+    devtool: false
+  }
 };
