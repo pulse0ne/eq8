@@ -22,7 +22,7 @@ const FREQ_LINES = {
 export default {
   name: 'FrequencyResponsePlot',
   props: {
-    activeNode: null,
+    activeNode: { type: Number },
     filters: { type: Array },
     context: { type: AudioContext },
     freqStart: { type: Number }
@@ -32,8 +32,7 @@ export default {
       drawing: null,
       filterNodes: {},
       handleLocations: {},
-      dragging: false,
-      activeNodeId: 1
+      dragging: false
     };
   },
   created () {
@@ -100,14 +99,16 @@ export default {
       this.handleLocations = {}; // reset locations
       filters.forEach(f => {
         const x = Math.floor(m * Math.log10(f.frequency / this.freqStart));
+        // TODO: shouldn't always use yVlas, use gain (when available)
+        const y = Math.min(Math.max(0, yVals[x]), height);
 
         draw.strokeStyle = colors.accent;
         draw.lineWidth = 2;
         draw.beginPath();
-        draw.arc(x, yVals[x], HANDLE_RADIUS, 0, TWO_PI);
+        draw.arc(x, y, HANDLE_RADIUS, 0, TWO_PI);
         draw.stroke();
 
-        if (f.id === this.activeNodeId) {
+        if (f.id === this.activeNode) {
           draw.fillStyle = colors.accent;
           draw.fill();
           draw.strokeStyle = 'black';
@@ -115,11 +116,10 @@ export default {
 
         draw.lineWidth = 1;
         draw.textAlign = 'center';
-        draw.strokeText(f.id, x, yVals[x] + HANDLE_RADIUS / 2);
+        draw.strokeText(f.id, x, y + HANDLE_RADIUS / 2);
 
-        this.handleLocations[f.id] = { x, y: yVals[x] };
+        this.handleLocations[f.id] = { x, y };
       });
-      console.log('handles:', this.handleLocations);
     },
     draw () {
       if (!this.drawing) return;
@@ -153,7 +153,7 @@ export default {
       this.drawing.strokeStyle = colors.line;
       const yVals = [];
       for (let i = 0; i < width; ++i) {
-        let response = magRes.reduce((a, c) => a * c, 1);
+        let response = magRes.reduce((a, c) => a * c[i], 1);
         let dbResponse = 20.0 * Math.log10(Math.abs(response) || 1);
         const y = (0.5 * height) - ((0.5 * height) / DB_SCALE) * dbResponse;
         i === 0 ? this.drawing.moveTo(i, y) : this.drawing.lineTo(i, y);
@@ -165,13 +165,14 @@ export default {
     },
     mousedown ($event) {
       const { offsetX, offsetY } = $event;
-      const node = Object.values(this.handleLocations).find(({ x, y }) => {
+      const node = Object.entries(this.handleLocations).find(entry => {
+        const { x, y } = entry[1];
         const [ xHit, yHit ] = [ x + HANDLE_RADIUS, y + HANDLE_RADIUS ];
         const [ diffX, diffY ] = [ xHit - offsetX, yHit - offsetY ];
         return diffX > 0 && diffY > 0 && diffX < HANDLE_CIRCUMFERENCE && diffY < HANDLE_CIRCUMFERENCE;
       });
       if (node) {
-        this.$emit('node-selected', node.id);
+        this.$emit('handle-selected', parseInt(node[0]));
         this.dragging = true;
         document.body.style.cursor = 'grabbing';
       }
@@ -201,7 +202,9 @@ export default {
   watch: {
     filters () {
       window.requestAnimationFrame(this.draw);
-      console.log('redraw:filters');
+    },
+    activeNode () {
+      window.requestAnimationFrame(this.draw);
     }
   }
 };

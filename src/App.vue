@@ -16,7 +16,7 @@
         <div class="col align-center dial-wrapper">
           <div class="dial-label">Gain</div>
           <div @click="gainDisabled ? $noOp : gainValue = 0" class="zeroer" :class="{disabled: gainDisabled}">
-            <i class="eq8-arrow_drop_down zeroer"></i>
+            <i class="eq8 arrow_drop_down zeroer"></i>
           </div>
           <Dial :size="dialSize" :value="gainValue" :min="-20" :max="20" :disabled="gainDisabled" @change="gainDialHandler"></Dial>
           <NumberEditLabel
@@ -42,12 +42,17 @@
         </div>
       </div>
       <div class="col">
-        <FrequencyResponsePlot :filters="frFilters" :context="frAudioContext" :freq-start="freqStart"></FrequencyResponsePlot>
+        <FrequencyResponsePlot
+          :filters="frFilters"
+          :context="frAudioContext"
+          :freq-start="freqStart"
+          :active-node="selectedFilter ? selectedFilter.id : null"
+          @handle-selected="handleSelected"/>
         <div class="grow row">
           <div class="section grow col align-center justify-center" v-for="f in frFilters" :key="f.id">
             <Choose :options="filterOptions" :selected="editingFilterType" direction="up" @change="testSelectedHandler"></Choose>
             <div class="grow row align-center justify-end">
-              <Checkbox class="filter-enable-checkbox"></Checkbox>{{ f.id }}
+              <Checkbox class="filter-enable-checkbox" :value="f.enabled"></Checkbox>{{ f.id }}
             </div>
           </div>
         </div>
@@ -69,12 +74,12 @@ import FrequencyResponsePlot from './components/FrequencyResponsePlot';
 const WebAudioContext = (window.AudioContext || window.webkitAudioContext);
 
 const opts = [
-  { icon: 'eq8-lowpass', value: 'lowpass', title: 'Low Pass', qEnabled: true, gainEnabled: false },
-  { icon: 'eq8-lowshelf', value: 'lowshelf', title: 'Low Shelf', qEnabled: false, gainEnabled: true },
-  { icon: 'eq8-peaking', value: 'peaking', title: 'Peaking', qEnabled: true, gainEnabled: true },
-  { icon: 'eq8-notch', value: 'notch', title: 'Notch', qEnabled: true, gainEnabled: false },
-  { icon: 'eq8-highshelf', value: 'highshelf', title: 'High Shelf', qEnabled: false, gainEnabled: true },
-  { icon: 'eq8-highpass', value: 'highpass', title: 'High Pass', qEnabled: true, gainEnabled: false }
+  { iconClass: ['eq8', 'highpass'], value: 'highpass', title: 'High Pass', qEnabled: true, gainEnabled: false },
+  { iconClass: ['eq8', 'lowshelf'], value: 'lowshelf', title: 'Low Shelf', qEnabled: false, gainEnabled: true },
+  { iconClass: ['eq8', 'peaking'], value: 'peaking', title: 'Peaking', qEnabled: true, gainEnabled: true },
+  { iconClass: ['eq8', 'notch'], value: 'notch', title: 'Notch', qEnabled: true, gainEnabled: false },
+  { iconClass: ['eq8', 'highshelf'], value: 'highshelf', title: 'High Shelf', qEnabled: false, gainEnabled: true },
+  { iconClass: ['eq8', 'lowpass'], value: 'lowpass', title: 'Low Pass', qEnabled: true, gainEnabled: false }
 ];
 
 export default {
@@ -92,37 +97,49 @@ export default {
       filterOptions: opts,
       testSelected: opts[0], // TODO remove
       editingFilterType: opts[0], // TODO remove
-      qValue: 1.0,
-      freqValue: 0.2411251725194261, // 64Hz
-      gainValue: 0,
       freqStart: 10.0,
+      selectedFilter: null,
       frAudioContext: new WebAudioContext(),
       frFilters: []
     };
   },
   created () {
     browser.runtime.sendMessage({ type: 'GET::STATE' })
-      .then(state => this.frFilters = this.$arrayCopy(state.filters));
+      .then(state => this.frFilters = this.$arrayCopy(state.filters))
+      .then(() => this.selectedFilter = this.frFilters[0]);
   },
   methods: {
     gainDialHandler (value) {
-      this.gainValue = value;
+      // TODO: communicate with back-end
+      // this.gainValue = value;
     },
     qDialHandler (value) {
-      this.qValue = value;
+      // TODO: communicate with back-end
+      // this.qValue = value;
     },
     freqDialHandler (value) {
-      this.freqValue = value;
+      // TODO: communicate with back-end
+      // this.freqValue = value;
     },
     testSelectedHandler (option) {
       this.testSelected = option;
       this.editingFilterType = option;
     },
     freqInputHandler (value) {
-      this.freqValue = (Math.log10(value / this.nyquist) / Math.log10(this.nyquist / this.freqStart)) + 1;
+      // TODO: communicate with back-end
+      // this.freqValue = (Math.log10(value / this.nyquist) / Math.log10(this.nyquist / this.freqStart)) + 1;
     },
     toFixed (value) {
       return value.toFixed(2);
+    },
+    frequencyToValue (value) {
+      return (Math.log10(value / this.nyquist) / Math.log10(this.nyquist / this.freqStart)) + 1;
+    },
+    handleSelected (id) {
+      const sel = this.frFilters.find(f => f.id === id);
+      if (sel) {
+        this.selectedFilter = sel;
+      }
     }
   },
   computed: {
@@ -143,10 +160,15 @@ export default {
     },
     qDisabled () {
       return !this.editingFilterType.qEnabled;
-    }
-  },
-  watch: {
-    fixedFrequency () {
+    },
+    gainValue () {
+      return this.selectedFilter ? this.selectedFilter.gain : 0;
+    },
+    qValue () {
+      return this.selectedFilter ? this.selectedFilter.q : 1.0;
+    },
+    freqValue () {
+      return this.frequencyToValue(this.selectedFilter ? this.selectedFilter.frequency : this.freqStart);
     }
   }
 };

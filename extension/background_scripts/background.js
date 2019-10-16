@@ -7,7 +7,7 @@ const defaultFilters = [
     frequency: 46,
     gain: 0.0,
     q: 1.0,
-    type: 'lowpass',
+    type: 'highpass',
     enabled: true
   },
   {
@@ -63,7 +63,7 @@ const defaultFilters = [
     frequency: 64,
     gain: 0.0,
     q: 1.0,
-    type: 'highpass',
+    type: 'lowpass',
     enabled: false
   }
 ];

@@ -128,6 +128,8 @@ export default {
 <style lang="scss" scoped>
   @import '../styles/base';
 
+  $bezier-transition: 0.3s cubic-bezier(0, 0, 0.24, 1);
+
   .dial {
     position: relative;
     display: block;
@@ -154,7 +156,7 @@ export default {
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     z-index: 5;
-    transition: 0.3s cubic-bezier(0, 0, 0.24, 1);
+    transition: $bezier-transition;
 
     .dial-grip-tick {
       @include no-select;
@@ -170,11 +172,11 @@ export default {
     pointer-events: none;
     position: absolute;
     stroke-linecap: round !important;
-    transition: 0.3s cubic-bezier(0, 0, 0.24, 1);
+    transition: $bezier-transition;
 
     path {
-      transition: 0.3s cubic-bezier(0, 0, 0.24, 1);
       stroke: $track-color;
+      transition: $bezier-transition;
 
       &.fill {
         stroke: $accent-color;

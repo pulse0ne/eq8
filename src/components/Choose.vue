@@ -1,13 +1,13 @@
 <template>
   <div class="choose" :class="{'open': show }">
     <div @click="openOptions">
-      <i v-if="selected.icon" :class="selected.icon"></i>
+      <i v-if="selected.iconClass" :class="selected.iconClass"></i>
       <span v-if="selected.text">{{ selected.text }}</span>
-      <i class="eq8-arrow_drop_down bigger-icon"></i>
+      <i class="eq8 arrow_drop_down bigger-icon"></i>
     </div>
     <div class="choose-popup" :style="popupStyle" ref="popup" v-if="show">
       <div v-for="opt in options" :key="opt.value" class="option" @click="optionSelected(opt)" :title="opt.title">
-        <i v-if="opt.icon" :class="opt.icon"></i>
+        <i v-if="opt.iconClass" :class="opt.iconClass"></i>
         <span v-if="opt.text">{{ opt.text }}</span>
       </div>
     </div>
@@ -75,16 +75,19 @@ export default {
       position: absolute;
       padding: 2px;
       background: $background;
+      border: $border;
+      border-radius: $standard-border-radius;
       z-index: 999;
       @include standard-shadow;
 
       .option {
         padding: 0.25em 0;
+        text-align: center;
       }
 
       .option:hover {
         background-color: $accent-color;
-        color: white;
+        color: $background;
       }
     }
   }

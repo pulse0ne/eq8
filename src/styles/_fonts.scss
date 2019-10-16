@@ -16,8 +16,8 @@
   font-display: block;
 }
 
-i, .icomoon-liga {
-  // noinspection CssNoGenericFontName
+.eq8 {
+  //noinspection CssNoGenericFontName
   font-family: 'eq8' !important;
   speak: none;
   font-style: normal;
@@ -26,80 +26,40 @@ i, .icomoon-liga {
   text-transform: none;
   line-height: 1;
 
-  /* Enable Ligatures ================ */
-  letter-spacing: 0;
-  -webkit-font-feature-settings: "liga";
-  -moz-font-feature-settings: "liga=1";
-  -moz-font-feature-settings: "liga";
-  font-feature-settings: "liga";
-  -webkit-font-variant-ligatures: discretionary-ligatures;
-  font-variant-ligatures: discretionary-ligatures;
-
-  /* Better Font Rendering =========== */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-.eq8-clearclose:before {
+.highpass:before {
   content: "\e900";
 }
-
-.eq8-save:before {
+.highshelf:before {
   content: "\e901";
 }
-
-.eq8-tonality:before {
+.lowpass:before {
   content: "\e902";
 }
-
-.eq8-arrow_drop_down:before {
+.lowshelf:before {
   content: "\e903";
 }
-
-.eq8-arrow_drop_up:before {
+.notch:before {
   content: "\e904";
 }
-
-.eq8-arrow_left:before {
+.peaking:before {
   content: "\e905";
 }
-
-.eq8-arrow_right:before {
+.arrow_drop_down:before {
   content: "\e906";
 }
-
-.eq8-delete:before {
-  content: "\e90f";
+.save:before {
+  content: "\e962";
 }
-
-.eq8-toggle_off:before {
-  content: "\e907";
+.spinner:before {
+  content: "\e97b";
 }
-
-.eq8-toggle_on:before {
-  content: "\e908";
+.github:before {
+  content: "\eab0";
 }
-
-.eq8-highpass:before {
-  content: "\e909";
-}
-
-.eq8-highshelf:before {
-  content: "\e90a";
-}
-
-.eq8-lowpass:before {
-  content: "\e90b";
-}
-
-.eq8-lowshelf:before {
-  content: "\e90c";
-}
-
-.eq8-notch:before {
-  content: "\e90d";
-}
-
-.eq8-peaking:before {
-  content: "\e90e";
+.paypal:before {
+  content: "\ead8";
 }
