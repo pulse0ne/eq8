@@ -1,28 +1,28 @@
 <template>
     <div class="canvas-wrapper" style="width: 600px; height: 250px;">
       <canvas ref="grid" id="grid" width="600px" height="250px"></canvas>
-      <canvas ref="graph" id="graph" width="600px" height="250px" @mousedown="mousedown" @mouseup="mouseup" @mousemove="mousemove"></canvas>
+      <canvas ref="graph" id="graph" width="600px" height="250px" @mouseup="mouseup" @mousedown="mousedown"></canvas>
     </div>
 </template>
 
 <script>
+import throttle from '../utils/throttle';
 import colors from '../styles/_colors.scss';
 
 const TWO_PI = 2.0 * Math.PI;
-
 const HANDLE_RADIUS = 8;
-
+const HANDLE_CIRCUMFERENCE = 2 * HANDLE_RADIUS;
+const DB_SCALE = 20.0;
 const FREQ_LINES = {
   '100': 100,
   '1k': 1000,
   '10k': 10000
 };
 
-const DB_SCALE = 20.0;
-
 export default {
   name: 'FrequencyResponsePlot',
   props: {
+    activeNode: null,
     filters: { type: Array },
     context: { type: AudioContext },
     freqStart: { type: Number }
@@ -31,7 +31,9 @@ export default {
     return {
       drawing: null,
       filterNodes: {},
-      handleLocations: {} // TODO: track handle locations for event hitboxes
+      handleLocations: {},
+      dragging: false,
+      activeNodeId: 1
     };
   },
   created () {
@@ -46,6 +48,8 @@ export default {
     this.gridDrawing = this.$refs.grid.getContext('2d');
     const { width, height } = this.$refs.grid;
     this.drawGrid(width, height);
+
+    this.$refs.graph.addEventListener('mousemove', throttle(this.mousemove.bind(this), 100));
   },
   methods: {
     drawGrid (width, height) {
@@ -80,7 +84,7 @@ export default {
       // draw decibel lines
       for (let db = -DB_SCALE + 5; db < DB_SCALE; db += 5) {
         const dbToY = (0.5 * height) - ((0.5 * height) / DB_SCALE) * db;
-        const y = Math.floor(dbToY) + 0.5; // (tsned) adjustment for crisp lines
+        const y = Math.floor(dbToY) + 0.5; // adjustment for crisp lines
         this.gridDrawing.strokeStyle = db === 0 ? colors.graphLineBright : colors.graphLine;
         this.gridDrawing.beginPath();
         this.gridDrawing.moveTo(0, y);
@@ -93,8 +97,8 @@ export default {
     drawHandles (width, height, m, filters, yVals) {
       const draw = this.drawing;
 
+      this.handleLocations = {}; // reset locations
       filters.forEach(f => {
-        console.log(f.frequency);
         const x = Math.floor(m * Math.log10(f.frequency / this.freqStart));
 
         draw.strokeStyle = colors.accent;
@@ -103,12 +107,19 @@ export default {
         draw.arc(x, yVals[x], HANDLE_RADIUS, 0, TWO_PI);
         draw.stroke();
 
+        if (f.id === this.activeNodeId) {
+          draw.fillStyle = colors.accent;
+          draw.fill();
+          draw.strokeStyle = 'black';
+        }
+
         draw.lineWidth = 1;
         draw.textAlign = 'center';
         draw.strokeText(f.id, x, yVals[x] + HANDLE_RADIUS / 2);
 
-        // TODO: update handle location
+        this.handleLocations[f.id] = { x, y: yVals[x] };
       });
+      console.log('handles:', this.handleLocations);
     },
     draw () {
       if (!this.drawing) return;
@@ -150,14 +161,36 @@ export default {
       }
       this.drawing.stroke();
 
-      console.log(yVals);
       this.drawHandles(width, height, m, enabledFilters, yVals);
     },
-    mousedown ($event) {},
-    mouseup ($event) {},
+    mousedown ($event) {
+      const { offsetX, offsetY } = $event;
+      const node = Object.values(this.handleLocations).find(({ x, y }) => {
+        const [ xHit, yHit ] = [ x + HANDLE_RADIUS, y + HANDLE_RADIUS ];
+        const [ diffX, diffY ] = [ xHit - offsetX, yHit - offsetY ];
+        return diffX > 0 && diffY > 0 && diffX < HANDLE_CIRCUMFERENCE && diffY < HANDLE_CIRCUMFERENCE;
+      });
+      if (node) {
+        this.$emit('node-selected', node.id);
+        this.dragging = true;
+        document.body.style.cursor = 'grabbing';
+      }
+    },
+    mouseup ($event) {
+      this.dragging = false;
+      document.body.style.cursor = '';
+    },
     mousemove ($event) {
       const { offsetX, offsetY } = $event;
-      console.log(offsetX, offsetY);
+      if (!this.dragging) {
+        if (!offsetX && !offsetY) return; // when mouse stops, these are 0
+        const hit = Object.values(this.handleLocations).some(({ x, y }) => {
+          const [ xHit, yHit ] = [ x + HANDLE_RADIUS, y + HANDLE_RADIUS ];
+          const [ diffX, diffY ] = [ xHit - offsetX, yHit - offsetY ];
+          return diffX > 0 && diffY > 0 && diffX < HANDLE_CIRCUMFERENCE && diffY < HANDLE_CIRCUMFERENCE;
+        });
+        document.body.style.cursor = hit ? 'grab' : '';
+      }
     }
   },
   computed: {

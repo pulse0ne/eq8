@@ -44,10 +44,10 @@
       <div class="col">
         <FrequencyResponsePlot :filters="frFilters" :context="frAudioContext" :freq-start="freqStart"></FrequencyResponsePlot>
         <div class="grow row">
-          <div class="section grow col align-center justify-center" v-for="a in 8" :key="a">
-            <Choose :options="testOpts" :selected="editingFilterType" direction="up" @change="testSelectedHandler"></Choose>
+          <div class="section grow col align-center justify-center" v-for="f in frFilters" :key="f.id">
+            <Choose :options="filterOptions" :selected="editingFilterType" direction="up" @change="testSelectedHandler"></Choose>
             <div class="grow row align-center justify-end">
-              <Checkbox class="filter-enable-checkbox"></Checkbox>{{ a }}
+              <Checkbox class="filter-enable-checkbox"></Checkbox>{{ f.id }}
             </div>
           </div>
         </div>
@@ -65,6 +65,8 @@ import Choose from './components/Choose';
 import NumberEditLabel from './components/NumberEditLabel';
 import Checkbox from './components/Checkbox';
 import FrequencyResponsePlot from './components/FrequencyResponsePlot';
+
+const WebAudioContext = (window.AudioContext || window.webkitAudioContext);
 
 const opts = [
   { icon: 'eq8-lowpass', value: 'lowpass', title: 'Low Pass', qEnabled: true, gainEnabled: false },
@@ -87,24 +89,20 @@ export default {
   data () {
     return {
       dialSize: 55,
-      testVal: 0,
-      testOpts: opts,
-      testSelected: opts[0],
-      editingFilterType: opts[0],
+      filterOptions: opts,
+      testSelected: opts[0], // TODO remove
+      editingFilterType: opts[0], // TODO remove
       qValue: 1.0,
       freqValue: 0.2411251725194261, // 64Hz
       gainValue: 0,
       freqStart: 10.0,
-      frAudioContext: new AudioContext(),
+      frAudioContext: new WebAudioContext(),
       frFilters: []
     };
   },
   created () {
-    browser.runtime.sendMessage({ type: 'GET::STATE' }).then((state) => {
-      // eslint-disable-next-line
-      console.log(state);
-      this.frFilters = JSON.parse(JSON.stringify(state.filters));
-    });
+    browser.runtime.sendMessage({ type: 'GET::STATE' })
+      .then(state => this.frFilters = this.$arrayCopy(state.filters));
   },
   methods: {
     gainDialHandler (value) {
@@ -149,7 +147,6 @@ export default {
   },
   watch: {
     fixedFrequency () {
-      // window.requestAnimationFrame(this.draw);
     }
   }
 };
