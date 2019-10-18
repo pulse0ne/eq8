@@ -1,13 +1,21 @@
 {
   "name": "eq8",
   "version": "0.0.1",
-  "private": true,
+  "author": "Tyler Snedigar <snedigart@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pulse0ne/eq8"
+  },
+  "bugs": {
+    "url": "https://github.com/pulse0ne/eq8/issues",
+    "email": "snedigart@gmail.com"
+  },
   "scripts": {
-    "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "build:watch": "vue-cli-service build --watch",
     "lint": "vue-cli-service lint",
-    "start": "web-ext run --source-dir ./extension --verbose --no-config-discovery",
-    "build:watch": "vue-cli-service build --watch"
+    "start": "web-ext run --source-dir ./extension --verbose --no-config-discovery"
   },
   "dependencies": {
     "vue": "^2.6.10"

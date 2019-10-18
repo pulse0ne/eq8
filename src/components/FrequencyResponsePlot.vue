@@ -18,6 +18,14 @@ const FREQ_LINES = {
   '1k': 1000,
   '10k': 10000
 };
+const USE_GAIN = {
+  highpass: false,
+  lowshelf: true,
+  peaking: true,
+  notch: false,
+  highshelf: true,
+  lowpass: false
+};
 
 export default {
   name: 'FrequencyResponsePlot',
@@ -48,7 +56,7 @@ export default {
     const { width, height } = this.$refs.grid;
     this.drawGrid(width, height);
 
-    this.$refs.graph.addEventListener('mousemove', throttle(this.mousemove.bind(this), 100));
+    this.$refs.graph.addEventListener('mousemove', throttle(this.mousemove.bind(this), 50));
   },
   methods: {
     drawGrid (width, height) {
@@ -99,8 +107,7 @@ export default {
       this.handleLocations = {}; // reset locations
       filters.forEach(f => {
         const x = Math.floor(m * Math.log10(f.frequency / this.freqStart));
-        // TODO: shouldn't always use yVlas, use gain (when available)
-        const y = Math.min(Math.max(0, yVals[x]), height);
+        const y = (USE_GAIN[f.type] ? Math.min(Math.max(10, yVals[x]), height + 10) : height * 0.5) - 10;
 
         draw.strokeStyle = colors.accent;
         draw.lineWidth = 2;
@@ -116,7 +123,7 @@ export default {
 
         draw.lineWidth = 1;
         draw.textAlign = 'center';
-        draw.strokeText(f.id, x, y + HANDLE_RADIUS / 2);
+        draw.strokeText(f.id, x, y + HANDLE_RADIUS * 0.5);
 
         this.handleLocations[f.id] = { x, y };
       });
@@ -155,7 +162,7 @@ export default {
       for (let i = 0; i < width; ++i) {
         let response = magRes.reduce((a, c) => a * c[i], 1);
         let dbResponse = 20.0 * Math.log10(Math.abs(response) || 1);
-        const y = (0.5 * height) - ((0.5 * height) / DB_SCALE) * dbResponse;
+        const y = (0.5 * height) * (1 - dbResponse / DB_SCALE);
         i === 0 ? this.drawing.moveTo(i, y) : this.drawing.lineTo(i, y);
         yVals.push(y);
       }
@@ -183,20 +190,37 @@ export default {
     },
     mousemove ($event) {
       const { offsetX, offsetY } = $event;
+      if (!offsetX && !offsetY) return; // when mouse stops, these are 0
       if (!this.dragging) {
-        if (!offsetX && !offsetY) return; // when mouse stops, these are 0
         const hit = Object.values(this.handleLocations).some(({ x, y }) => {
           const [ xHit, yHit ] = [ x + HANDLE_RADIUS, y + HANDLE_RADIUS ];
           const [ diffX, diffY ] = [ xHit - offsetX, yHit - offsetY ];
           return diffX > 0 && diffY > 0 && diffX < HANDLE_CIRCUMFERENCE && diffY < HANDLE_CIRCUMFERENCE;
         });
         document.body.style.cursor = hit ? 'grab' : '';
+      } else {
+        const active = this.filters.find(f => f.id === this.activeNode);
+        if (active) {
+          const frequency = this.xToFrequency(offsetX, this.$refs.graph.width);
+          if (USE_GAIN[active.type]) {
+            this.$emit('filter-changed', { id: active.id, frequency, gain: this.yToGain(offsetY, this.$refs.graph.height) });
+          } else {
+            this.$emit('filter-changed', { id: active.id, frequency });
+          }
+        }
       }
+    },
+    xToFrequency (x, width) {
+      const m = width / Math.log10(this.nyquist / this.freqStart);
+      return Math.pow(10, x / m) * this.freqStart;
+    },
+    yToGain (y, height) {
+      return DB_SCALE * (((-2 * y) / height) + 1);
     }
   },
   computed: {
     nyquist () {
-      return this.context.sampleRate / 2.0;
+      return this.context.sampleRate * 0.5;
     }
   },
   watch: {

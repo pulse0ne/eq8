@@ -33,10 +33,11 @@
 
     arrangeFilters (pipeline) {
       const { context, source, filters } = pipeline;
+      filters.sort((a, b) => b.filter.frequency - a.filter.frequency);
       const enabledFilters = filters.filter(f => f.enabled);
       enabledFilters.forEach((f, ix, arr) => {
         if (ix > 0) enabledFilters[ix - 1].filter.connect(f.filter);
-        if (ix === arr.length - 1) f.connect(context.destination);
+        if (ix === arr.length - 1) f.filter.connect(context.destination);
       });
       source.connect(this.state.enabled && enabledFilters.length ? enabledFilters[0].filter : context.destination);
     }
@@ -48,12 +49,12 @@
       const elFilters = [];
       filters.forEach((filter) => {
         const f = context.createBiquadFilter();
-        const { frequency, q, gain, type, enabled } = filter;
+        const { frequency, q, gain, type, enabled, id } = filter;
         f.frequency.value = frequency;
         f.Q.value = q;
         f.gain.value = gain;
         f.type = type;
-        elFilters.push({ filter: f, enabled });
+        elFilters.push({ filter: f, enabled, id });
       });
       const pipeline = { context, source, filters: elFilters };
       this.arrangeFilters(pipeline);
@@ -62,15 +63,16 @@
 
     updatePipelines () {
       this.pipelines.forEach(({ context, source, filters }) => {
-        this.state.filters.forEach((f, ix) => {
-          const entry = filters[ix];
+        this.state.filters.forEach(f => {
+          const entry = filters.find(i => i.id === f.id);
           const filter = entry.filter;
           filter.frequency.value = f.frequency;
+          filter.type = f.type;
           filter.Q.value = f.q;
           filter.gain.value = f.gain;
-          filter.type = f.type;
           entry.enabled = f.enabled;
         });
+        source.disconnect();
         filters.forEach(f => f.filter.disconnect());
         this.arrangeFilters({ context, source, filters });
       });
@@ -86,6 +88,7 @@
     domMutated () {
       const mediaElements = ([...document.body.querySelectorAll('video')])
         .concat([...document.body.querySelectorAll('audio')]);
+
       mediaElements
         .filter(el => !el.eq8)
         .forEach(el => {

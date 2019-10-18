@@ -128,8 +128,6 @@ export default {
 <style lang="scss" scoped>
   @import '../styles/base';
 
-  $bezier-transition: 0.3s cubic-bezier(0, 0, 0.24, 1);
-
   .dial {
     position: relative;
     display: block;

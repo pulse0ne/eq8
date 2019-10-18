@@ -6,8 +6,8 @@ const defaultFilters = [
     id: 1,
     frequency: 46,
     gain: 0.0,
-    q: 1.0,
-    type: 'highpass',
+    q: 0.0,
+    type: 'lowshelf',
     enabled: true
   },
   {
@@ -15,7 +15,7 @@ const defaultFilters = [
     frequency: 215,
     gain: 0.0,
     q: 1.0,
-    type: 'lowshelf',
+    type: 'peaking',
     enabled: true
   },
   {
@@ -36,7 +36,7 @@ const defaultFilters = [
   },
   {
     id: 5,
-    frequency: 64,
+    frequency: 64, // TODO
     gain: 0.0,
     q: 1.0,
     type: 'peaking',
@@ -44,7 +44,7 @@ const defaultFilters = [
   },
   {
     id: 6,
-    frequency: 64,
+    frequency: 64, // TODO
     gain: 0.0,
     q: 1.0,
     type: 'peaking',
@@ -52,7 +52,7 @@ const defaultFilters = [
   },
   {
     id: 7,
-    frequency: 64,
+    frequency: 64, // TODO
     gain: 0.0,
     q: 1.0,
     type: 'highshelf',
@@ -60,7 +60,7 @@ const defaultFilters = [
   },
   {
     id: 8,
-    frequency: 64,
+    frequency: 64, // TODO
     gain: 0.0,
     q: 1.0,
     type: 'lowpass',
@@ -107,9 +107,7 @@ const throttle = function (func, threshold, context) {
   };
 };
 
-const broadcastMessage = throttle((msg) => {
-  $storage.set({ [STORAGE_KEY]: state }).then(() => contentScripts.forEach(p => p.postMessage(msg)));
-}, 100);
+const broadcastMessage = throttle((msg) => $storage.set({ [STORAGE_KEY]: state }).then(() => contentScripts.forEach(p => p.postMessage(msg))), 50);
 
 $storage.get([STORAGE_KEY])
   .then(g => g[STORAGE_KEY] ? Promise.resolve(Object.assign(state, g[STORAGE_KEY])) : $storage.set({ [STORAGE_KEY]: state }))
