@@ -2,7 +2,7 @@
   <div class="edit-label">
     <div class="edit-label-text" v-if="!edit" @click="labelClicked">{{ label }}</div>
     <input type="text" class="edit-label-input" v-if="edit" :value="valInternal" @blur="blur" @input="key"
-           @keypress.enter="blur">
+           @keypress.enter="blur" ref="textinput">
   </div>
 </template>
 
@@ -24,6 +24,13 @@ export default {
       if (this.disabled) return;
       this.valInternal = this.value;
       this.edit = true;
+      this.$nextTick(() => {
+        const textinput = this.$refs.textinput;
+        if (textinput) {
+          textinput.focus();
+          textinput.select();
+        }
+      });
     },
     blur () {
       let f = this.valInternal;

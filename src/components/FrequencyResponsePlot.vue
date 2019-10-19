@@ -26,6 +26,14 @@ const USE_GAIN = {
   highshelf: true,
   lowpass: false
 };
+const EDITABLE_Q = {
+  highpass: false,
+  lowshelf: false,
+  peaking: true,
+  notch: true,
+  highshelf: false,
+  lowpass: false
+};
 
 export default {
   name: 'FrequencyResponsePlot',
@@ -33,7 +41,8 @@ export default {
     activeNode: { type: Number },
     filters: { type: Array },
     context: { type: AudioContext },
-    freqStart: { type: Number }
+    freqStart: { type: Number },
+    disabled: { type: Boolean }
   },
   data () {
     return {
@@ -57,6 +66,7 @@ export default {
     this.drawGrid(width, height);
 
     this.$refs.graph.addEventListener('mousemove', throttle(this.mousemove.bind(this), 50));
+    this.$refs.graph.addEventListener('mousewheel', throttle(this.mousewheel.bind(this), 50));
   },
   methods: {
     drawGrid (width, height) {
@@ -109,14 +119,14 @@ export default {
         const x = Math.floor(m * Math.log10(f.frequency / this.freqStart));
         const y = (USE_GAIN[f.type] ? Math.min(Math.max(10, yVals[x]), height + 10) : height * 0.5) - 10;
 
-        draw.strokeStyle = colors.accent;
+        draw.strokeStyle = this.disabled ? colors.disabled : colors.accent;
         draw.lineWidth = 2;
         draw.beginPath();
         draw.arc(x, y, HANDLE_RADIUS, 0, TWO_PI);
         draw.stroke();
 
         if (f.id === this.activeNode) {
-          draw.fillStyle = colors.accent;
+          draw.fillStyle = this.disabled ? colors.disabled : colors.accent;
           draw.fill();
           draw.strokeStyle = 'black';
         }
@@ -157,7 +167,7 @@ export default {
 
       this.drawing.beginPath();
       this.drawing.lineWidth = 2;
-      this.drawing.strokeStyle = colors.line;
+      this.drawing.strokeStyle = this.disabled ? colors.disabled : colors.line;
       const yVals = [];
       for (let i = 0; i < width; ++i) {
         let response = magRes.reduce((a, c) => a * c[i], 1);
@@ -171,6 +181,7 @@ export default {
       this.drawHandles(width, height, m, enabledFilters, yVals);
     },
     mousedown ($event) {
+      if (this.disabled) return;
       const { offsetX, offsetY } = $event;
       const node = Object.entries(this.handleLocations).find(entry => {
         const { x, y } = entry[1];
@@ -189,6 +200,7 @@ export default {
       document.body.style.cursor = '';
     },
     mousemove ($event) {
+      if (this.disabled) return;
       const { offsetX, offsetY } = $event;
       if (!offsetX && !offsetY) return; // when mouse stops, these are 0
       if (!this.dragging) {
@@ -210,6 +222,14 @@ export default {
         }
       }
     },
+    mousewheel ($event) {
+      if (this.disabled) return;
+      const active = this.filters.find(f => f.id === this.activeNode);
+      if (active && EDITABLE_Q[active.type]) {
+        const q = Math.max(0, Math.min(active.q - $event.deltaY * 0.01, 10));
+        this.$emit('filter-changed', { id: active.id, q });
+      }
+    },
     xToFrequency (x, width) {
       const m = width / Math.log10(this.nyquist / this.freqStart);
       return Math.pow(10, x / m) * this.freqStart;
@@ -228,6 +248,9 @@ export default {
       window.requestAnimationFrame(this.draw);
     },
     activeNode () {
+      window.requestAnimationFrame(this.draw);
+    },
+    disabled () {
       window.requestAnimationFrame(this.draw);
     }
   }

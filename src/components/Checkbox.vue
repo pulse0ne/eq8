@@ -7,7 +7,7 @@
 <script>
 export default {
   name: 'Checkbox',
-  props: { value: Boolean },
+  props: { value: Boolean, disabled: Boolean },
   data () {
     return {
       internalVal: this.value
@@ -15,13 +15,17 @@ export default {
   },
   methods: {
     handler () {
+      if (this.disabled) return;
       this.internalVal = !this.internalVal;
       this.$emit('input', this.internalVal);
     }
   },
   computed: {
     klass () {
-      return this.internalVal ? 'checked' : null;
+      return {
+        checked: this.internalVal,
+        disabled: this.disabled
+      };
     }
   },
   watch: {
@@ -54,6 +58,10 @@ export default {
 
       &.checked {
         background: $accent-color;
+      }
+
+      &.checked.disabled {
+        background: $disabled-color;
       }
     }
   }

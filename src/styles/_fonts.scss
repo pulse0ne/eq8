@@ -1,23 +1,24 @@
+$fontdir: '~@/styles/fonts/';
+
 // noinspection CssUnknownTarget
 @font-face {
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 400;
-  src: local('Roboto'), local('Roboto-Regular'), url('~@/styles/fonts/roboto.woff2') format('woff2');
+  src: local('Roboto'), local('Roboto-Regular'), url($fontdir + 'roboto.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 // noinspection CssUnknownTarget
 @font-face {
   font-family: 'eq8';
-  src: url('~@/styles/fonts/eq8.ttf') format('truetype'), url('~@/styles/fonts/eq8.woff') format('woff'), url('~@/styles/fonts/eq8.svg') format('svg');
+  src: url($fontdir + 'eq8.ttf') format('truetype'), url($fontdir + 'eq8.woff') format('woff'), url($fontdir + 'eq8.svg') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
 }
 
 .eq8 {
-  //noinspection CssNoGenericFontName
   font-family: 'eq8' !important;
   speak: none;
   font-style: normal;
@@ -25,11 +26,25 @@
   font-variant: normal;
   text-transform: none;
   line-height: 1;
-
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+.github:before {
+  content: "\f09b";
+}
+.github-alt:before {
+  content: "\f113";
+}
+.paypal:before {
+  content: "\f1ed";
+}
+.chrome:before {
+  content: "\f268";
+}
+.firefox:before {
+  content: "\f269";
+}
 .highpass:before {
   content: "\e900";
 }
@@ -48,18 +63,216 @@
 .peaking:before {
   content: "\e905";
 }
-.arrow_drop_down:before {
+.error:before {
   content: "\e906";
 }
+.error_outline:before {
+  content: "\e907";
+}
+.warningreport_problem:before {
+  content: "\e908";
+}
+.fast_forward:before {
+  content: "\e920";
+}
+.fast_rewind:before {
+  content: "\e921";
+}
+.loopsync:before {
+  content: "\e922";
+}
+.mic:before {
+  content: "\e923";
+}
+.mic_none:before {
+  content: "\e924";
+}
+.mic_off:before {
+  content: "\e925";
+}
+.pause:before {
+  content: "\e926";
+}
+.pause_circle_filled:before {
+  content: "\e927";
+}
+.pause_circle_outline:before {
+  content: "\e928";
+}
+.play_arrow:before {
+  content: "\e929";
+}
+.play_circle_filled:before {
+  content: "\e92a";
+}
+.play_circle_outline:before {
+  content: "\e92b";
+}
+.queue_music:before {
+  content: "\e92c";
+}
+.repeat:before {
+  content: "\e92d";
+}
+.repeat_one:before {
+  content: "\e92e";
+}
+.replay:before {
+  content: "\e92f";
+}
+.shuffle:before {
+  content: "\e930";
+}
+.skip_next:before {
+  content: "\e931";
+}
+.skip_previous:before {
+  content: "\e932";
+}
+.stop:before {
+  content: "\e933";
+}
+.volume_down:before {
+  content: "\e934";
+}
+.volume_mute:before {
+  content: "\e935";
+}
+.volume_off:before {
+  content: "\e936";
+}
+.volume_up:before {
+  content: "\e937";
+}
+.add:before {
+  content: "\e909";
+}
+.add_box:before {
+  content: "\e938";
+}
+.add_circle:before {
+  content: "\e90a";
+}
+.add_circle_outlinecontrol_point:before {
+  content: "\e90b";
+}
+.backspace:before {
+  content: "\e939";
+}
+.clearclose:before {
+  content: "\e90c";
+}
+.remove:before {
+  content: "\e90d";
+}
+.remove_circledo_not_disturb_on:before {
+  content: "\e90e";
+}
+.remove_circle_outline:before {
+  content: "\e90f";
+}
 .save:before {
-  content: "\e962";
+  content: "\e910";
 }
-.spinner:before {
-  content: "\e97b";
+.headset:before {
+  content: "\e93a";
 }
-.github:before {
-  content: "\eab0";
+.keyboard_voice:before {
+  content: "\e93b";
 }
-.paypal:before {
-  content: "\ead8";
+.speaker:before {
+  content: "\e911";
+}
+.headset_off:before {
+  content: "\e93c";
+}
+.audiotrack:before {
+  content: "\e93d";
+}
+.tune:before {
+  content: "\e93e";
+}
+.music_off:before {
+  content: "\e93f";
+}
+.arrow_back:before {
+  content: "\e940";
+}
+.arrow_drop_down:before {
+  content: "\e912";
+}
+.arrow_drop_down_circle:before {
+  content: "\e913";
+}
+.arrow_drop_up:before {
+  content: "\e914";
+}
+.arrow_forward:before {
+  content: "\e941";
+}
+.cancel:before {
+  content: "\e915";
+}
+.menu:before {
+  content: "\e916";
+}
+.keyboard_control:before {
+  content: "\e917";
+}
+.more_vert:before {
+  content: "\e918";
+}
+.refresh:before {
+  content: "\e942";
+}
+.arrow_back_ios:before {
+  content: "\e943";
+}
+.arrow_forward_ios:before {
+  content: "\e944";
+}
+.check_box:before {
+  content: "\e919";
+}
+.check_box_outline_blank:before {
+  content: "\e91a";
+}
+.delete:before {
+  content: "\e945";
+}
+.done:before {
+  content: "\e91b";
+}
+.favorite:before {
+  content: "\e91c";
+}
+.favorite_outline:before {
+  content: "\e91d";
+}
+.highlight_remove:before {
+  content: "\e946";
+}
+.launchopen_in_new:before {
+  content: "\e91e";
+}
+.power_settings_new:before {
+  content: "\e947";
+}
+.settings:before {
+  content: "\e91f";
+}
+.settings_input_componentsettings_input_composite:before {
+  content: "\e948";
+}
+.reorder:before {
+  content: "\e949";
+}
+.delete_outline:before {
+  content: "\e94a";
+}
+.toggle_off:before {
+  content: "\e94b";
+}
+.toggle_on:before {
+  content: "\e94c";
 }

@@ -1,6 +1,6 @@
 <template>
-  <div class="choose" :class="{'open': show }">
-    <div @click="openOptions">
+  <div class="choose" :class="{open: show, disabled: disabled}">
+    <div @click="openOptions" class="choose-display">
       <i v-if="selected.iconClass" :class="selected.iconClass"></i>
       <span v-if="selected.text">{{ selected.text }}</span>
       <i class="eq8 arrow_drop_down bigger-icon"></i>
@@ -25,7 +25,8 @@ export default {
   props: {
     selected: Object,
     options: Array,
-    direction: { type: String, default: 'down' }
+    direction: { type: String, default: 'down' },
+    disabled: Boolean
   },
   computed: {
     popupStyle () {
@@ -66,6 +67,17 @@ export default {
     padding: 0.3em 0 0.3em 0.75em;
     border-radius: $standard-border-radius;
     position: relative;
+    background-color: $background;
+    transition: all $bezier-transition;
+
+    &.disabled {
+      background-color: lighten($background, 25%);
+    }
+
+    .choose-display {
+      display: flex;
+      align-items: center;
+    }
 
     &.open {
       border-color: transparent;

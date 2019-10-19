@@ -4,21 +4,40 @@
       <div class="col align-center section dail-section">
         <div class="col align-center dial-wrapper">
           <div class="dial-label">Freq</div>
-          <Dial :size="dialSize" :value="freqValue" :min="0" :max="1" @change="freqDialHandler"></Dial>
+          <Dial
+            :size="dialSize"
+            :value="freqValue"
+            :min="0"
+            :max="1"
+            :disabled="freqDisabled"
+            @change="freqDialHandler"
+          />
           <NumberEditLabel
             :value="fixedFrequency"
             :label="freqLabel"
             :min="10"
             :max="24000"
+            :disabled="freqDisabled"
             @change="freqInputHandler"
-          ></NumberEditLabel>
+          />
         </div>
         <div class="col align-center dial-wrapper">
           <div class="dial-label">Gain</div>
-          <div @click="gainDisabled ? $noOp : gainDialHandler(0)" class="zeroer" :class="{disabled: gainDisabled}">
+          <div
+            @click="gainDisabled ? $noOp : gainDialHandler(0)"
+            class="zeroer"
+            :class="{disabled: gainDisabled}"
+          >
             <i class="eq8 arrow_drop_down zeroer"></i>
           </div>
-          <Dial :size="dialSize" :value="gainValue" :min="-20" :max="20" :disabled="gainDisabled" @change="gainDialHandler"></Dial>
+          <Dial
+            :size="dialSize"
+            :value="gainValue"
+            :min="-20"
+            :max="20"
+            :disabled="gainDisabled"
+            @change="gainDialHandler"
+          />
           <NumberEditLabel
             :value="gainValue"
             :label="toFixed(gainValue) + ' dB'"
@@ -26,11 +45,18 @@
             :max="20"
             :disabled="gainDisabled"
             @change="gainDialHandler"
-          ></NumberEditLabel>
+          />
         </div>
         <div class="col align-center dial-wrapper">
           <div class="dial-label">Q</div>
-          <Dial :size="dialSize" :value="qValue" :min="0" :max="10" :disabled="qDisabled" @change="qDialHandler"></Dial>
+          <Dial
+            :size="dialSize"
+            :value="qValue"
+            :min="0"
+            :max="10"
+            :disabled="qDisabled"
+            @change="qDialHandler"
+          />
           <NumberEditLabel
             :value="qValue"
             :label="toFixed(qValue)"
@@ -38,28 +64,54 @@
             :max="10"
             :disabled="qDisabled"
             @change="qDialHandler"
-          ></NumberEditLabel>
+          />
         </div>
       </div>
       <div class="col">
         <FrequencyResponsePlot
+          :disabled="!eqEnabled"
           :filters="frFilters"
           :context="frAudioContext"
           :freq-start="freqStart"
           :active-node="selectedFilter ? selectedFilter.id : null"
           @handle-selected="handleSelected"
-          @filter-changed="frFilterChanged" />
+          @filter-changed="frFilterChanged"
+        />
         <div class="grow row">
-          <div class="section grow col align-center justify-center" v-for="f in frFilters" :key="f.id" :class="{ 'selected': selectedFilter && f.id === selectedFilter.id }" @click="selectFilter(f)">
-            <Choose :options="filterOptions" :selected="filterTypeForFilter(f)" direction="up" @change="changeFilterType(f, ...arguments)"></Choose>
+          <div
+            class="section grow col align-center justify-center"
+            v-for="f in frFilters"
+            :key="f.id"
+            :class="{ 'selected': selectedFilter && f.id === selectedFilter.id }"
+            @click="selectFilter(f)"
+          >
+            <Choose
+              :options="filterOptions"
+              :selected="filterTypeForFilter(f)"
+              :disabled="!eqEnabled"
+              direction="up"
+              @change="changeFilterType(f, ...arguments)"
+            />
             <div class="grow row align-center justify-end">
-              <Checkbox class="filter-enable-checkbox" :value="f.enabled" @input="toggleFilterEnabled(f)"></Checkbox>{{ f.id }}
+              <Checkbox
+                class="filter-enable-checkbox"
+                :value="f.enabled"
+                :disabled="!eqEnabled"
+                @input="toggleFilterEnabled(f)"
+              />{{ f.id }}
             </div>
           </div>
         </div>
       </div>
       <div class="col section">
-        TODO
+        <div class="grow">
+          <div class="master-enable" @click="toggleMasterEnabled" title="Enable/Disable">
+            <i class="eq8 power_settings_new" :class="{ enabled: eqEnabled }"></i>
+          </div>
+        </div>
+        <div class="col justify-center align-center">
+          <i class="eq8 settings settings-btn" title="Options"></i>
+        </div>
       </div>
     </div>
   </div>
@@ -115,6 +167,9 @@ export default {
     stateUpdateHandler ({ filters, enabled }) {
       this.frFilters = this.$arrayCopy(filters);
       this.eqEnabled = enabled;
+      if (this.selectedFilter) {
+        this.selectedFilter = this.frFilters.find(f => f.id === this.selectedFilter.id);
+      }
     },
     gainDialHandler (value) {
       const newFilter = Object.assign(this.selectedFilter, { gain: value });
@@ -152,7 +207,7 @@ export default {
       return filter ? this.filterOptions.find(o => o.value === filter.type) : {};
     },
     selectFilter (filter) {
-      if (filter.enabled) {
+      if (this.eqEnabled && filter.enabled) {
         this.selectedFilter = filter;
       }
     },
@@ -165,13 +220,16 @@ export default {
         delete change.id;
         port.postMessage({ type: 'SET::FILTER', filter: Object.assign(filter, change) });
       }
+    },
+    toggleMasterEnabled () {
+      port.postMessage({ type: 'SET::ENABLED', enabled: !this.eqEnabled });
     }
   },
   computed: {
     nyquist () {
       return this.frAudioContext.sampleRate * 0.5;
     },
-    fixedFrequency () {
+    fixedFrequency () { // TODO this isn't necessary anymore (selectedFilter will have the "fixed" frequency value)
       const f = this.freqValue;
       const o = Math.log10(this.nyquist / this.freqStart);
       return this.nyquist * Math.pow(10, o * (f - 1));
@@ -180,11 +238,14 @@ export default {
       const f = this.fixedFrequency;
       return f >= 1000 ? `${(f / 1000).toFixed(2)} kHz` : `${f.toFixed(2)} Hz`;
     },
+    freqDisabled () {
+      return !this.eqEnabled;
+    },
     gainDisabled () {
-      return !this.filterTypeForFilter(this.selectedFilter).gainEnabled;
+      return !this.eqEnabled || !this.filterTypeForFilter(this.selectedFilter).gainEnabled;
     },
     qDisabled () {
-      return !this.filterTypeForFilter(this.selectedFilter).qEnabled;
+      return !this.eqEnabled || !this.filterTypeForFilter(this.selectedFilter).qEnabled;
     },
     gainValue () {
       return this.selectedFilter ? this.selectedFilter.gain : 0;
@@ -248,5 +309,37 @@ export default {
 
   .filter-enable-checkbox {
     margin-right: 0.75em;
+  }
+
+  .master-enable {
+    cursor: pointer;
+
+    &:hover {
+      .eq8 {
+        color: white;
+      }
+    }
+
+    .eq8 {
+      font-size: 32px;
+      margin: 8px;
+      color: $disabled-color;
+      transition: color $bezier-transition;
+
+      &.enabled {
+        color: $accent-color;
+      }
+    }
+  }
+
+  .settings-btn {
+    cursor: pointer;
+    font-size: 20px;
+    margin: 8px;
+    transition: color $bezier-transition;
+
+    &:hover {
+      color: $accent-color;
+    }
   }
 </style>

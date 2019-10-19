@@ -55,7 +55,7 @@ const defaultFilters = [
     frequency: 64, // TODO
     gain: 0.0,
     q: 1.0,
-    type: 'highshelf',
+    type: 'peaking',
     enabled: false
   },
   {
@@ -63,7 +63,7 @@ const defaultFilters = [
     frequency: 64, // TODO
     gain: 0.0,
     q: 1.0,
-    type: 'lowpass',
+    type: 'highshelf',
     enabled: false
   }
 ];

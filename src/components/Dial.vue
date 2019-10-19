@@ -1,6 +1,6 @@
 <template>
   <div class="dial" :style="dialStyle" :class="dialClass">
-    <div class="dial-grip" :style="gripStyle" @mousedown="mousedown">
+    <div class="dial-grip" :style="gripStyle" @mousedown="mousedown" @wheel="mousewheel">
       <div class="dial-grip-tick" :style="tickStyle"></div>
     </div>
     <svg class="dial-svg" :viewBox="viewbox" :style="svgStyle">
@@ -120,6 +120,17 @@ export default {
     mouseup () {
       document.removeEventListener('mousemove', this.mousemove);
       document.removeEventListener('mouseup', this.mouseup);
+    },
+    mousewheel ($event) {
+      if (this.disabled) return;
+      const { deltaY } = $event;
+      const { min, max } = this;
+      const scale = (max - min) / 512;
+      const d = -deltaY * scale;
+      const nv = Math.max(min, Math.min(this.value + d, max));
+      if (d !== 0) {
+        this.$emit('change', nv);
+      }
     }
   }
 };
