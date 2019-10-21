@@ -32,17 +32,44 @@ body {
   flex-direction: row;
 }
 
-$justify-values: flex-start, flex-end, start, end, left, right, center, space-between, space-around, space-evenly;
-@each $v in $justify-values {
+$_justify_values: flex-start, flex-end, start, end, left, right, center, space-between, space-around, space-evenly;
+@each $v in $_justify_values {
   .justify-#{$v} {
     justify-content: #{$v};
   }
 }
 
-$align-values: stretch, flex-start, start, self-start, flex-end, end, self-end, center, baseline;
-@each $v in $align-values {
+$_align_values: stretch, flex-start, start, self-start, flex-end, end, self-end, center, baseline;
+@each $v in $_align_values {
   .align-#{$v} {
     align-items: #{$v};
+  }
+}
+
+$_spacer_types: margin, padding;
+$_spacer_values: 4, 8, 16, 32;
+$_spacer_dirs: top, right, bottom, left;
+@each $t in $_spacer_types {
+  @each $v in $_spacer_values {
+    $ix: index($_spacer_values, $v);
+    $f: str_slice($t, 0, 1);
+    .#{$f}#{$ix} {
+      #{$t}: #{$v}px;
+    }
+    @each $d in $_spacer_dirs {
+      $s: str_slice($d, 0, 1);
+      .#{$f}#{$s}#{$ix} {
+        #{$t}-#{$d}: #{$v}px;
+      }
+    }
+    .#{$f}x#{$ix} {
+      #{$t}-left: #{$v}px;
+      #{$t}-right: #{$v}px;
+    }
+    .#{$f}y#{$ix} {
+      #{$t}-top: #{$v}px;
+      #{$t}-bottom: #{$v}px;
+    }
   }
 }
 

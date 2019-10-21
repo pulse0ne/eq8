@@ -18,7 +18,7 @@
   "browser_action": {
     "default_icon": "icons/icon-48.png",
     "default_title": "eq8",
-    "default_popup": "popup/popup.html",
+    "default_popup": "build/popup.html",
     "browser_style": false
   },
   "content_scripts": [
@@ -39,6 +39,6 @@
     ]
   },
   "options_ui": {
-    "page": "options/options.html"
+    "page": "build/options.html"
   }
 }

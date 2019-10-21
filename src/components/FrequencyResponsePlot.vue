@@ -66,7 +66,7 @@ export default {
     this.drawGrid(width, height);
 
     this.$refs.graph.addEventListener('mousemove', throttle(this.mousemove.bind(this), 50));
-    this.$refs.graph.addEventListener('mousewheel', throttle(this.mousewheel.bind(this), 50));
+    this.$refs.graph.addEventListener('wheel', throttle(this.mousewheel.bind(this), 50));
   },
   methods: {
     drawGrid (width, height) {
@@ -223,6 +223,7 @@ export default {
       }
     },
     mousewheel ($event) {
+      // TODO: configurable wheel multiplier
       if (this.disabled) return;
       const active = this.filters.find(f => f.id === this.activeNode);
       if (active && EDITABLE_Q[active.type]) {

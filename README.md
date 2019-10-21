@@ -16,6 +16,7 @@ you to play around with the plugin, because it's actually a lot of fun messing w
 - [ ] About/Options page
 - [x] Mouse wheel changes Q (when available) in FR plot
 - [x] Mouse wheel changes dials
+- [ ] Configurable wheel multiplier for dials
 - [ ] Cursor consistency
 
 

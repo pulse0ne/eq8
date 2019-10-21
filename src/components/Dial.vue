@@ -125,7 +125,7 @@ export default {
       if (this.disabled) return;
       const { deltaY } = $event;
       const { min, max } = this;
-      const scale = (max - min) / 512;
+      const scale = (max - min) / 2048; // TODO configurable (options) scale
       const d = -deltaY * scale;
       const nv = Math.max(min, Math.min(this.value + d, max));
       if (d !== 0) {
