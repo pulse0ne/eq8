@@ -60,24 +60,24 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import '../styles/base';
+@import '../styles/base';
 
-  .edit-label-text,
-  .edit-label-input {
-    padding: 4px 2px;
-    font-size: 11px;
-    font-family: inherit;
-  }
+.edit-label-text,
+.edit-label-input {
+  padding: 4px 2px;
+  font-size: 11px;
+  font-family: inherit;
+}
 
-  .edit-label-text {
-    @include no-select;
-    overflow: visible;
-  }
+.edit-label-text {
+  @include no-select;
+  overflow: visible;
+}
 
-  .edit-label-input {
-    width: 4em;
-    border: none;
-    background: rgba(255, 255, 255, 0.8);
-    @include standard-shadow;
-  }
+.edit-label-input {
+  width: 4em;
+  border: none;
+  background: rgba(255, 255, 255, 0.8);
+  @include standard-shadow;
+}
 </style>

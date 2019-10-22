@@ -1,87 +1,16 @@
 @import './colors.scss';
-@import './fonts.scss';
-
-$separator: 1px solid rgba(0, 0, 0, 0.2);
-//$border: 1px solid rgba(0, 0, 0, 0.7);
-$border: 1px solid rgba(255, 255, 255, 0.7);
-$light-border: 1px solid rgba(255, 255, 255, 0.2);
-$standard-border-radius: 4px;
-$bezier-transition: 0.3s cubic-bezier(0, 0, 0.24, 1);
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  padding: 0;
-  margin: 0;
-  font-family: 'Roboto', sans-serif;
-  background-color: $background;
-  color: #fefefe;
-}
-
-.col, .row {
-  display: flex;
-}
-
-.col {
-  flex-direction: column;
-}
-
-.row {
-  flex-direction: row;
-}
-
-$_justify_values: flex-start, flex-end, start, end, left, right, center, space-between, space-around, space-evenly;
-@each $v in $_justify_values {
-  .justify-#{$v} {
-    justify-content: #{$v};
-  }
-}
-
-$_align_values: stretch, flex-start, start, self-start, flex-end, end, self-end, center, baseline;
-@each $v in $_align_values {
-  .align-#{$v} {
-    align-items: #{$v};
-  }
-}
-
-$_spacer_types: margin, padding;
-$_spacer_values: 4, 8, 16, 32;
-$_spacer_dirs: top, right, bottom, left;
-@each $t in $_spacer_types {
-  @each $v in $_spacer_values {
-    $ix: index($_spacer_values, $v);
-    $f: str_slice($t, 0, 1);
-    .#{$f}#{$ix} {
-      #{$t}: #{$v}px;
-    }
-    @each $d in $_spacer_dirs {
-      $s: str_slice($d, 0, 1);
-      .#{$f}#{$s}#{$ix} {
-        #{$t}-#{$d}: #{$v}px;
-      }
-    }
-    .#{$f}x#{$ix} {
-      #{$t}-left: #{$v}px;
-      #{$t}-right: #{$v}px;
-    }
-    .#{$f}y#{$ix} {
-      #{$t}-top: #{$v}px;
-      #{$t}-bottom: #{$v}px;
-    }
-  }
-}
-
-.grow {
-  flex: 1;
-}
+//@import './fonts.scss';
 
 /** mixins **/
 @mixin no-select {
   user-select: none;
 }
-
 @mixin standard-shadow {
   box-shadow: 0 2px 3px rgba(0, 0, 0, .13), 1px 2px 2px rgba(0, 0, 0, .1), -1px -2px 2px rgba(0, 0, 0, .05);
 }
+
+$separator: 1px solid rgba(0, 0, 0, 0.2);
+$border: 1px solid rgba(255, 255, 255, 0.7);
+$light-border: 1px solid rgba(255, 255, 255, 0.2);
+$standard-border-radius: 4px;
+$bezier-transition: 0.3s cubic-bezier(0, 0, 0.24, 1);

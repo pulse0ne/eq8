@@ -137,64 +137,63 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import '../styles/base';
+@import '../styles/base';
 
-  .dial {
-    position: relative;
-    display: block;
+.dial {
+  position: relative;
+  display: block;
 
-    &.disabled {
-      .dial-grip {
-        .dial-grip-tick {
-          background-color: $disabled-color;
-        }
+  &.disabled {
+    .dial-grip {
+      .dial-grip-tick {
+        background-color: $disabled-color;
       }
+    }
 
-      .dial-svg {
-        path.fill {
-          stroke: $disabled-color;
-        }
+    .dial-svg {
+      path.fill {
+        stroke: $disabled-color;
       }
     }
   }
+}
 
-  .dial-grip {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    z-index: 5;
-    transition: $bezier-transition;
+.dial-grip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  transition: $bezier-transition;
 
-    .dial-grip-tick {
-      @include no-select;
-      pointer-events: none;
-      position: absolute;
-      top: 15%;
-      left: 50%;
-      background-color: $accent-color;
-    }
-  }
-
-  .dial-svg {
+  .dial-grip-tick {
+    @include no-select;
     pointer-events: none;
     position: absolute;
-    stroke-linecap: round !important;
+    top: 15%;
+    left: 50%;
+    background-color: $accent-color;
+  }
+}
+
+.dial-svg {
+  pointer-events: none;
+  position: absolute;
+  stroke-linecap: round !important;
+  transition: $bezier-transition;
+
+  path {
+    stroke: $track-color;
     transition: $bezier-transition;
 
-    path {
-      stroke: $track-color;
-      transition: $bezier-transition;
-
-      &.fill {
-        stroke: $accent-color;
-      }
-    }
-
-    circle {
-      fill: $background;
+    &.fill {
+      stroke: $accent-color;
     }
   }
 
+  circle {
+    fill: $background;
+  }
+}
 </style>

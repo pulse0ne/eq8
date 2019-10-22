@@ -56,51 +56,51 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import '../styles/base';
+@import '../styles/base';
 
-  .bigger-icon {
-    font-size: 1.5em;
+.bigger-icon {
+  font-size: 1.5em;
+}
+
+.choose {
+  border: $border;
+  padding: 0.3em 0 0.3em 0.75em;
+  border-radius: $standard-border-radius;
+  position: relative;
+  background-color: $background;
+  transition: all $bezier-transition;
+
+  &.disabled {
+    background-color: lighten($background, 25%);
   }
 
-  .choose {
+  .choose-display {
+    display: flex;
+    align-items: center;
+  }
+
+  &.open {
+    border-color: transparent;
+  }
+
+  .choose-popup {
+    position: absolute;
+    padding: 2px;
+    background: $background;
     border: $border;
-    padding: 0.3em 0 0.3em 0.75em;
     border-radius: $standard-border-radius;
-    position: relative;
-    background-color: $background;
-    transition: all $bezier-transition;
+    z-index: 999;
+    @include standard-shadow;
 
-    &.disabled {
-      background-color: lighten($background, 25%);
+    .option {
+      padding: 0.25em 0;
+      text-align: center;
     }
 
-    .choose-display {
-      display: flex;
-      align-items: center;
-    }
-
-    &.open {
-      border-color: transparent;
-    }
-
-    .choose-popup {
-      position: absolute;
-      padding: 2px;
-      background: $background;
-      border: $border;
-      border-radius: $standard-border-radius;
-      z-index: 999;
-      @include standard-shadow;
-
-      .option {
-        padding: 0.25em 0;
-        text-align: center;
-      }
-
-      .option:hover {
-        background-color: $accent-color;
-        color: $background;
-      }
+    .option:hover {
+      background-color: $accent-color;
+      color: $background;
     }
   }
+}
 </style>

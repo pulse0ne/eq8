@@ -18,7 +18,7 @@
   "browser_action": {
     "default_icon": "icons/icon-48.png",
     "default_title": "eq8",
-    "default_popup": "build/popup.html",
+    "default_popup": "popup/popup.html",
     "browser_style": false
   },
   "content_scripts": [
@@ -37,8 +37,5 @@
       "lib/webextension-polyfill/browser-polyfill.js",
       "background_scripts/background.js"
     ]
-  },
-  "options_ui": {
-    "page": "build/options.html"
   }
 }

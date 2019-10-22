@@ -1,8 +1,8 @@
 <template>
-    <div class="canvas-wrapper" style="width: 600px; height: 250px;">
-      <canvas ref="grid" id="grid" width="600px" height="250px"></canvas>
-      <canvas ref="graph" id="graph" width="600px" height="250px" @mouseup="mouseup" @mousedown="mousedown"></canvas>
-    </div>
+  <div class="canvas-wrapper" style="width: 600px; height: 250px;">
+    <canvas ref="grid" id="grid" width="600px" height="250px"></canvas>
+    <canvas ref="graph" id="graph" width="600px" height="250px" @mouseup="mouseup" @mousedown="mousedown"></canvas>
+  </div>
 </template>
 
 <script>
@@ -67,6 +67,13 @@ export default {
 
     this.$refs.graph.addEventListener('mousemove', throttle(this.mousemove.bind(this), 50));
     this.$refs.graph.addEventListener('wheel', throttle(this.mousewheel.bind(this), 50));
+
+    // TODO: test
+    this.$refs.graph.addEventListener('dblclick', () => {
+      const u = this.$refs.graph.toDataURL('image/png');
+      console.log(u);
+      this.$emit('save-canvas', u);
+    });
   },
   methods: {
     drawGrid (width, height) {
@@ -195,7 +202,7 @@ export default {
         document.body.style.cursor = 'grabbing';
       }
     },
-    mouseup ($event) {
+    mouseup () {
       this.dragging = false;
       document.body.style.cursor = '';
     },
@@ -259,27 +266,24 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import '../styles/base';
+.canvas-wrapper {
+  position: relative;
+  margin: 2px;
 
-  .canvas-wrapper {
-    position: relative;
-    margin: 2px;
-
-    #grid,
-    #graph {
-      position: absolute;
-      top: 0;
-      left: 0;
-      border-radius: 8px;
-    }
-
-    #grid {
-      background: #21272c;
-    }
-
-    #graph {
-      background: transparent;
-    }
+  #grid,
+  #graph {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 8px;
   }
 
+  #grid {
+    background: #21272c;
+  }
+
+  #graph {
+    background: transparent;
+  }
+}
 </style>

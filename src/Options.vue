@@ -1,19 +1,20 @@
 <template>
-    <div class="col p1">
-      <div class="col m1 settings-section">
-        <h2>Settings</h2>
-        <div class="row">
-          <label for="sensitivity" class="mr1"></label>
-          <input id="sensitivity" type="range" min="0" max="9" step="1" :value="sensitivity" @change="sensitivityChanged">
-        </div>
-      </div>
-      <div class="col m1 settings-section">
-        <h2>Presets</h2>
+  <div class="col p1">
+    <div class="col m1 settings-section">
+      <h2>Settings</h2>
+      <div class="row">
+        <label for="sensitivity" class="mr1"></label>
+        <input id="sensitivity" type="range" min="0" max="9" step="1" :value="sensitivity" @change="sensitivityChanged">
       </div>
     </div>
+    <div class="col m1 settings-section">
+      <h2>Presets</h2>
+    </div>
+  </div>
 </template>
 
 <script>
+// TODO TODO TODO: inline options
 const port = browser.runtime.connect({ name: 'eq8' });
 
 export default {
@@ -40,8 +41,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import 'styles/base';
-
   .settings-section:not(:last-child) { border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
 
   $track-w: 128px;
@@ -78,18 +77,11 @@ export default {
       @include track
     }
     &::-moz-range-track { @include track }
-    &::-ms-track { @include track }
 
     &::-webkit-slider-thumb {
       margin-top: .5*($track-h - $thumb-d);
       @include thumb
     }
     &::-moz-range-thumb { @include thumb }
-    &::-ms-thumb {
-      margin-top: 0;
-      @include thumb
-    }
-
-    &::-ms-tooltip { display: none }
   }
 </style>

@@ -110,10 +110,12 @@
           </div>
         </div>
         <div class="col justify-center align-center">
-          <i class="eq8 settings settings-btn" title="Options"></i>
+          <i class="eq8 settings settings-btn" title="Options" @click="settingsOpen = true"></i>
         </div>
       </div>
     </div>
+    <SettingsModal v-if="settingsOpen" @close="settingsOpen = false" />
+    <PresetsModal v-if="presetsOpen" @close="presetsOpen = false" />
   </div>
 </template>
 
@@ -123,6 +125,8 @@ import Choose from './components/Choose';
 import NumberEditLabel from './components/NumberEditLabel';
 import Checkbox from './components/Checkbox';
 import FrequencyResponsePlot from './components/FrequencyResponsePlot';
+import SettingsModal from './components/SettingsModal';
+import PresetsModal from './components/PresetsModal';
 
 const WebAudioContext = (window.AudioContext || window.webkitAudioContext);
 
@@ -144,7 +148,9 @@ export default {
     Dial,
     Choose,
     NumberEditLabel,
-    Checkbox
+    Checkbox,
+    SettingsModal,
+    PresetsModal
   },
   data () {
     return {
@@ -154,7 +160,9 @@ export default {
       freqStart: 10.0,
       selectedFilter: null,
       frAudioContext: new WebAudioContext(),
-      frFilters: []
+      frFilters: [],
+      settingsOpen: false,
+      presetsOpen: false
     };
   },
   created () {
@@ -229,10 +237,8 @@ export default {
     nyquist () {
       return this.frAudioContext.sampleRate * 0.5;
     },
-    fixedFrequency () { // TODO this isn't necessary anymore (selectedFilter will have the "fixed" frequency value)
-      const f = this.freqValue;
-      const o = Math.log10(this.nyquist / this.freqStart);
-      return this.nyquist * Math.pow(10, o * (f - 1));
+    fixedFrequency () {
+      return this.selectedFilter ? this.selectedFilter.frequency : this.freqStart;
     },
     freqLabel () {
       const f = this.fixedFrequency;
@@ -261,85 +267,143 @@ export default {
 </script>
 
 <style lang="scss">
-  @import './styles/base';
+@import './styles/base';
+@import './styles/fonts';
+@import './styles/modal';
 
-  #app {
-    font-size: 12px;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    margin: 4px;
+* { box-sizing: border-box; }
+
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: $background;
+  color: #fefefe;
+}
+
+$_justify_values: flex-start, flex-end, start, end, left, right, center, space-between, space-around, space-evenly;
+@each $v in $_justify_values {
+  .justify-#{$v} {
+    justify-content: #{$v};
   }
+}
 
-  .dial-wrapper {
-    margin: 6px 0;
+$_align_values: stretch, flex-start, start, self-start, flex-end, end, self-end, center, baseline;
+@each $v in $_align_values {
+  .align-#{$v} {
+    align-items: #{$v};
   }
+}
 
-  .dial-label {
-    @include no-select;
-  }
-
-  .section {
-    background: $section-color;
-    border-radius: 4px;
-    padding: 6px;
-    margin: 2px;
-    transition: background-color $bezier-transition;
-
-    &.selected {
-      background: $selected-section-color;
+$_spacer_types: margin, padding;
+$_spacer_values: 4, 8, 16, 32;
+$_spacer_dirs: top, right, bottom, left;
+@each $t in $_spacer_types {
+  @each $v in $_spacer_values {
+    $ix: index($_spacer_values, $v);
+    $f: str_slice($t, 0, 1);
+    .#{$f}#{$ix} {
+      #{$t}: #{$v}px;
     }
-  }
-
-  .dial-section {
-    min-width: 75px;
-  }
-
-  .zeroer {
-    margin: -0.5em 0;
-
-    &.disabled i {
-      color: $disabled-color;
-    }
-
-    i {
-      font-size: 1.5em;
-      color: $accent-color;
-    }
-  }
-
-  .filter-enable-checkbox {
-    margin-right: 0.75em;
-  }
-
-  .master-enable {
-    cursor: pointer;
-
-    &:hover {
-      .eq8 {
-        color: white;
+    @each $d in $_spacer_dirs {
+      $s: str_slice($d, 0, 1);
+      .#{$f}#{$s}#{$ix} {
+        #{$t}-#{$d}: #{$v}px;
       }
     }
+    .#{$f}x#{$ix} {
+      #{$t}-left: #{$v}px;
+      #{$t}-right: #{$v}px;
+    }
+    .#{$f}y#{$ix} {
+      #{$t}-top: #{$v}px;
+      #{$t}-bottom: #{$v}px;
+    }
+  }
+}
 
+.col, .row { display: flex; }
+.col { flex-direction: column; }
+.row { flex-direction: row; }
+.grow { flex: 1; }
+
+#app {
+  font-size: 12px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 4px;
+}
+
+.dial-wrapper {
+  margin: 6px 0;
+}
+
+.dial-label {
+  @include no-select;
+}
+
+.section {
+  background: $section-color;
+  border-radius: 4px;
+  padding: 6px;
+  margin: 2px;
+  transition: background-color $bezier-transition;
+
+  &.selected {
+    background: $selected-section-color;
+  }
+}
+
+.dial-section {
+  min-width: 75px;
+}
+
+.zeroer {
+  margin: -0.5em 0;
+
+  &.disabled i {
+    color: $disabled-color;
+  }
+
+  i {
+    font-size: 1.5em;
+    color: $accent-color;
+  }
+}
+
+.filter-enable-checkbox {
+  margin-right: 0.75em;
+}
+
+.master-enable {
+  cursor: pointer;
+
+  &:hover {
     .eq8 {
-      font-size: 32px;
-      margin: 8px;
-      color: $disabled-color;
-      transition: color $bezier-transition;
-
-      &.enabled {
-        color: $accent-color;
-      }
+      color: white;
     }
   }
 
-  .settings-btn {
-    cursor: pointer;
-    font-size: 20px;
+  .eq8 {
+    font-size: 32px;
     margin: 8px;
+    color: $disabled-color;
     transition: color $bezier-transition;
 
-    &:hover {
+    &.enabled {
       color: $accent-color;
     }
   }
+}
+
+.settings-btn {
+  cursor: pointer;
+  font-size: 20px;
+  margin: 8px;
+  transition: color $bezier-transition;
+
+  &:hover {
+    color: $accent-color;
+  }
+}
 </style>

@@ -1,6 +1,6 @@
 .DS_Store
 node_modules
-/extension/build
+/extension/popup
 
 # local env files
 .env.local

@@ -37,32 +37,32 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import '../styles/base';
+@import '../styles/base';
 
-  .checkbox-wrapper {
-    min-width: 1em;
-    max-width: 1em;
-    min-height: 1em;
-    max-height: 1em;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
+.checkbox-wrapper {
+  min-width: 1em;
+  max-width: 1em;
+  min-height: 1em;
+  max-height: 1em;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 
-    .checkbox {
-      border: $border;
-      background: transparent;
-      min-width: 0.9em;
-      max-width: 0.9em;
-      min-height: 0.9em;
-      max-height: 0.9em;
+  .checkbox {
+    border: $border;
+    background: transparent;
+    min-width: 0.9em;
+    max-width: 0.9em;
+    min-height: 0.9em;
+    max-height: 0.9em;
 
-      &.checked {
-        background: $accent-color;
-      }
+    &.checked {
+      background: $accent-color;
+    }
 
-      &.checked.disabled {
-        background: $disabled-color;
-      }
+    &.checked.disabled {
+      background: $disabled-color;
     }
   }
+}
 </style>
