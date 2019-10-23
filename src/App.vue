@@ -16,7 +16,7 @@
             :value="fixedFrequency"
             :label="freqLabel"
             :min="10"
-            :max="24000"
+            :max="nyquist"
             :disabled="freqDisabled"
             @change="freqInputHandler"
           />
@@ -103,19 +103,25 @@
           </div>
         </div>
       </div>
-      <div class="col section">
-        <div class="col align-center">
+      <div class="col section justify-space-between">
+        <div class="col align-center mb3">
           <div class="master-enable" @click="toggleMasterEnabled" title="Enable/Disable">
             <i class="eq8 power_settings_new" :class="{ enabled: eqEnabled }"></i>
           </div>
         </div>
         <div class="col justify-center align-center">
-          <i class="eq8 settings settings-btn" title="Options" @click="settingsOpen = true"></i>
+          <i class="eq8 save settings-btn" title="Save As Preset" @click="savePresetOpen = true"></i>
         </div>
         <div class="col justify-center align-center">
           <i class="eq8 tune settings-btn" title="Presets" @click="presetsOpen = true"></i>
         </div>
-        <div class="col align-center my2 grow justify-flex-end">
+        <div class="col justify-center align-center">
+          <i class="eq8 refresh settings-btn" title="Reset" @click="handleReset"></i>
+        </div>
+        <div class="col justify-center align-center">
+          <i class="eq8 settings settings-btn" title="Options" @click="settingsOpen = true"></i>
+        </div>
+        <div class="col align-center my2">
           <div class="dial-label">Preamp</div>
           <div
             @click="!eqEnabled ? $noOp : preampDialHandler(1.0)"
@@ -143,8 +149,9 @@
         </div>
       </div>
     </div>
-    <SettingsModal v-if="settingsOpen" @close="settingsOpen = false" />
-    <PresetsModal v-if="presetsOpen" @close="presetsOpen = false" />
+    <SettingsModal v-if="settingsOpen" @close="settingsOpen = false" v-model="settingsValue" />
+    <PresetsModal v-if="presetsOpen" @close="presetsOpen = false" v-model="presetsValue" />
+    <SavePresetModal v-if="savePresetOpen" @close="savePresetOpen = false" :img="presetImage" @save="savePreset" />
   </div>
 </template>
 
@@ -156,6 +163,7 @@ import Checkbox from './components/Checkbox';
 import FrequencyResponsePlot from './components/FrequencyResponsePlot';
 import SettingsModal from './components/SettingsModal';
 import PresetsModal from './components/PresetsModal';
+import SavePresetModal from './components/SavePresetModal';
 
 const WebAudioContext = (window.AudioContext || window.webkitAudioContext);
 
@@ -178,6 +186,7 @@ export default {
     Choose,
     NumberEditLabel,
     Checkbox,
+    SavePresetModal,
     SettingsModal,
     PresetsModal
   },
@@ -191,23 +200,30 @@ export default {
       selectedFilter: null,
       frAudioContext: new WebAudioContext(),
       frFilters: [],
+      settings: {},
+      presets: {},
+      presetImage: null,
       settingsOpen: false,
-      presetsOpen: false
+      presetsOpen: false,
+      savePresetOpen: false
     };
   },
   created () {
+    this.$bus.$on('fr-snapshot', snapshot => this.presetImage = snapshot);
     port.onMessage.addListener(msg => msg.type === 'SET::STATE' ? this.stateUpdateHandler(msg.state) : this.$noOp());
     this.$runtime.sendMessage({ type: 'GET::STATE' })
       .then(this.stateUpdateHandler)
       .then(() => this.selectedFilter = this.frFilters[0]);
   },
   methods: {
-    stateUpdateHandler ({ filters, enabled, preampMultiplier }) {
+    stateUpdateHandler ({ filters, enabled, preampMultiplier, settings, presets }) {
       this.frFilters = this.$arrayCopy(filters);
       this.eqEnabled = enabled;
       this.preampMultiplier = preampMultiplier;
+      this.settings = settings;
+      this.presets = presets;
       if (this.selectedFilter) {
-        this.selectedFilter = this.frFilters.find(f => f.id === this.selectedFilter.id);
+        this.selectedFilter = this.frFilters.find(f => f.id === this.selectedFilter.id && f.enabled);
       }
     },
     gainDialHandler (value) {
@@ -265,6 +281,14 @@ export default {
     },
     toggleMasterEnabled () {
       port.postMessage({ type: 'SET::ENABLED', enabled: !this.eqEnabled });
+    },
+    handleReset () {
+      port.postMessage({ type: 'RESET::FILTERS' });
+    },
+    savePreset (preset) {
+      console.log(preset.name, preset.icon);
+      this.savePresetOpen = false;
+      // TODO
     }
   },
   computed: {
@@ -295,6 +319,23 @@ export default {
     },
     freqValue () {
       return this.frequencyToValue(this.selectedFilter ? this.selectedFilter.frequency : this.freqStart);
+    },
+    presetsValue: {
+      get () { return this.presets; },
+      set (nv) { port.postMessage({ type: 'SET::PRESETS', presets: nv }); }
+    },
+    settingsValue: {
+      get () { return this.settings; },
+      set (nv) { port.postMessage({ type: 'SET::SETTINGS', settings: nv }); }
+    }
+  },
+  watch: {
+    savePresetOpen (nv) {
+      if (!nv) {
+        this.presetImage = null;
+      } else {
+        this.$bus.$emit('request-fr-snapshot');
+      }
     }
   }
 };
@@ -310,13 +351,12 @@ export default {
 body {
   padding: 0;
   margin: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   background-color: $background;
   color: #fefefe;
 }
 
 button {
-  cursor: pointer;
   background-color: black;
   color: white;
   padding: 0.5em 2em;
@@ -324,9 +364,14 @@ button {
   border-radius: 4px;
   @include standard-shadow;
 
-  &:hover {
+  &:not(:disabled):hover {
+    cursor: pointer;
     background-color: #111;
     @include hover-shadow;
+  }
+
+  &:disabled {
+    background-color: #666;
   }
 }
 

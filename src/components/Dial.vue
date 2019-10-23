@@ -1,5 +1,5 @@
 <template>
-  <div class="dial" :style="dialStyle" :class="dialClass">
+  <div class="dial" :style="dialStyle" :class="dialClass" @drag.stop>
     <div class="dial-grip" :style="gripStyle" @mousedown="mousedown" @wheel="mousewheel">
       <div class="dial-grip-tick" :style="tickStyle"></div>
     </div>

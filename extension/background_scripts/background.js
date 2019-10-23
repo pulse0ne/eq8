@@ -36,7 +36,7 @@ const defaultFilters = [
   },
   {
     id: 5,
-    frequency: 64, // TODO
+    frequency: 711,
     gain: 0.0,
     q: 1.0,
     type: 'peaking',
@@ -44,7 +44,7 @@ const defaultFilters = [
   },
   {
     id: 6,
-    frequency: 64, // TODO
+    frequency: 1668,
     gain: 0.0,
     q: 1.0,
     type: 'peaking',
@@ -52,7 +52,7 @@ const defaultFilters = [
   },
   {
     id: 7,
-    frequency: 64, // TODO
+    frequency: 3914,
     gain: 0.0,
     q: 1.0,
     type: 'peaking',
@@ -60,7 +60,7 @@ const defaultFilters = [
   },
   {
     id: 8,
-    frequency: 64, // TODO
+    frequency: 9182,
     gain: 0.0,
     q: 1.0,
     type: 'highshelf',
@@ -72,8 +72,15 @@ const state = {
   enabled: true,
   filters: JSON.parse(JSON.stringify(defaultFilters)),
   preampMultiplier: 1.0,
+  settings: {
+    sensitivity: 4
+  },
   presets: {
-    'Default': defaultFilters
+    'Default': {
+      locked: true,
+      image: null,
+      filters: defaultFilters
+    }
   },
   selectedPreset: ''
 };
@@ -153,6 +160,15 @@ $storage.get([STORAGE_KEY])
           break;
         case 'SET::PREAMP':
           state.preampMultiplier = msg.preampMultiplier;
+          broadcastState();
+          break;
+        case 'SET::SETTINGS':
+          state.settings = msg.settings;
+          broadcastState();
+          break;
+        case 'RESET::FILTERS':
+          state.filters = JSON.parse(JSON.stringify(defaultFilters));
+          state.preampMultiplier = 1.0;
           broadcastState();
           break;
         default:

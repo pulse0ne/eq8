@@ -68,12 +68,7 @@ export default {
     this.$refs.graph.addEventListener('mousemove', throttle(this.mousemove.bind(this), 50));
     this.$refs.graph.addEventListener('wheel', throttle(this.mousewheel.bind(this), 50));
 
-    // TODO: test
-    this.$refs.graph.addEventListener('dblclick', () => {
-      const u = this.$refs.graph.toDataURL('image/png');
-      console.log(u);
-      this.$emit('save-canvas', u);
-    });
+    this.$bus.$on('request-fr-snapshot', this.createSnapshot.bind(this));
   },
   methods: {
     drawGrid (width, height) {
@@ -145,11 +140,8 @@ export default {
         this.handleLocations[f.id] = { x, y };
       });
     },
-    draw () {
-      if (!this.drawing) return;
-      const { width, height } = this.$refs.graph;
-
-      this.drawing.clearRect(0, 0, width, height);
+    drawFrLine (drawCtx, width, height, lineWidth) {
+      drawCtx.clearRect(0, 0, width, height);
 
       const freqHz = new Float32Array(width);
       const m = width / Math.log10(this.nyquist / this.freqStart);
@@ -172,20 +164,35 @@ export default {
         magRes.push(mr);
       });
 
-      this.drawing.beginPath();
-      this.drawing.lineWidth = 2;
-      this.drawing.strokeStyle = this.disabled ? colors.disabled : colors.line;
+      drawCtx.beginPath();
+      drawCtx.lineWidth = lineWidth;
+      drawCtx.strokeStyle = this.disabled ? colors.disabled : colors.line;
       const yVals = [];
       for (let i = 0; i < width; ++i) {
         let response = magRes.reduce((a, c) => a * c[i], 1);
         let dbResponse = 20.0 * Math.log10(Math.abs(response) || 1);
         const y = (0.5 * height) * (1 - dbResponse / DB_SCALE);
-        i === 0 ? this.drawing.moveTo(i, y) : this.drawing.lineTo(i, y);
+        i === 0 ? drawCtx.moveTo(i, y) : drawCtx.lineTo(i, y);
         yVals.push(y);
       }
-      this.drawing.stroke();
+      drawCtx.stroke();
 
+      return { m, enabledFilters, yVals };
+    },
+    draw () {
+      if (!this.drawing) return;
+      const { width, height } = this.$refs.graph;
+      const { m, enabledFilters, yVals } = this.drawFrLine(this.drawing, width, height, 2);
       this.drawHandles(width, height, m, enabledFilters, yVals);
+    },
+    createSnapshot () {
+      const { width, height } = this.$refs.graph;
+      const tmpCanvas = document.createElement('canvas');
+      tmpCanvas.width = width;
+      tmpCanvas.height = height;
+      const ctx = tmpCanvas.getContext('2d');
+      this.drawFrLine(ctx, width, height, 8);
+      this.$bus.$emit('fr-snapshot', tmpCanvas.toDataURL('image/png'));
     },
     mousedown ($event) {
       if (this.disabled) return;
@@ -266,6 +273,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '../styles/colors';
+
 .canvas-wrapper {
   position: relative;
   margin: 2px;
@@ -279,7 +288,7 @@ export default {
   }
 
   #grid {
-    background: #21272c;
+    background: $fr-background;
   }
 
   #graph {

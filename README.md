@@ -19,6 +19,7 @@ you to play around with the plugin, because it's actually a lot of fun messing w
 - [ ] Configurable wheel multiplier for dials
 - [ ] Cursor consistency
 - [ ] Address TODOs
+- [ ] Error handling/reporting
 
 
 ## Project setup

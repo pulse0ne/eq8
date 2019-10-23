@@ -5,9 +5,7 @@
       :min="min"
       :max="max"
       :step="step"
-      :value="value"
-      :style="sliderStyle"
-      @input="handleInput"
+      v-model="localVal"
     >
   </div>
 </template>
@@ -20,19 +18,16 @@ export default {
     max: Number,
     step: Number,
     value: Number,
-    orient: String,
-    fillTrack: Boolean
-  },
-  methods: {
-    handleInput ($event) {
-      this.$emit('input', parseFloat($event.target.value));
-    }
+    orient: String
   },
   computed: {
-    sliderStyle () {
-      return {
-
-      };
+    localVal: {
+      get () {
+        return this.value;
+      },
+      set (nv) {
+        this.$emit('input', parseInt(nv));
+      }
     }
   }
 };

@@ -4,6 +4,12 @@
       <div class="modal-wrapper">
         <div class="modal-container col" @click.stop>
           <h2>Presets</h2>
+          <div class="presets-wrapper">
+            <div class="preset-entry" v-for="(preset, name) in value" :key="name">
+              {{ name }}
+              {{ preset }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -12,7 +18,8 @@
 
 <script>
 export default {
-  name: 'PresetsModal'
+  name: 'PresetsModal',
+  props: ['value']
 };
 </script>
 

@@ -33,7 +33,7 @@ export default {
       const s = {
         left: 0,
         width: '100%',
-        textAlign: this.options[0].icon ? 'center' : 'left'
+        textAlign: (this.options && this.options.length && this.options[0].icon) ? 'center' : 'left'
       };
       this.direction === 'up' ? s.bottom = 0 : s.top = 0;
       return s;
@@ -50,6 +50,7 @@ export default {
     },
     optionSelected (option) {
       this.$emit('change', option);
+      this.show = false;
     }
   }
 };
