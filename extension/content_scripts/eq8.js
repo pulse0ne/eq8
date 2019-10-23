@@ -32,18 +32,23 @@
     }
 
     arrangeFilters (pipeline) {
-      const { context, source, filters } = pipeline;
+      const { context, source, filters, preamp } = pipeline;
       filters.sort((a, b) => b.filter.frequency - a.filter.frequency);
       const enabledFilters = filters.filter(f => f.enabled);
       enabledFilters.forEach((f, ix, arr) => {
         if (ix > 0) enabledFilters[ix - 1].filter.connect(f.filter);
         if (ix === arr.length - 1) f.filter.connect(context.destination);
       });
-      source.connect(this.state.enabled && enabledFilters.length ? enabledFilters[0].filter : context.destination);
+      if (this.state.enabled && enabledFilters.length) {
+        preamp.connect(enabledFilters[0].filter);
+        source.connect(preamp);
+      } else {
+        source.connect(context.destination);
+      }
     }
 
     createPipelineForElement (element) {
-      const { filters } = this.state;
+      const { filters, preampMultiplier } = this.state;
       const context = new this.WebAudioContext();
       const source = context.createMediaElementSource(element);
       const elFilters = [];
@@ -56,13 +61,16 @@
         f.type = type;
         elFilters.push({ filter: f, enabled, id });
       });
-      const pipeline = { context, source, filters: elFilters };
+      const preamp = context.createGain();
+      preamp.gain.value = preampMultiplier;
+      const pipeline = { context, source, filters: elFilters, preamp };
       this.arrangeFilters(pipeline);
       this.pipelines.add(pipeline);
     }
 
     updatePipelines () {
-      this.pipelines.forEach(({ context, source, filters }) => {
+      this.pipelines.forEach((pipeline) => {
+        const { source, filters, preamp } = pipeline;
         this.state.filters.forEach(f => {
           const entry = filters.find(i => i.id === f.id);
           const filter = entry.filter;
@@ -72,9 +80,11 @@
           filter.gain.value = f.gain;
           entry.enabled = f.enabled;
         });
+        preamp.gain.value = this.state.preampMultiplier;
         source.disconnect();
+        preamp.disconnect();
         filters.forEach(f => f.filter.disconnect());
-        this.arrangeFilters({ context, source, filters });
+        this.arrangeFilters(pipeline);
       });
     }
 

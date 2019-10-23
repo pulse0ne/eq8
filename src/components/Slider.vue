@@ -48,15 +48,17 @@ $thumb-d: 12px;
 @mixin track() {
   box-sizing: border-box;
   border: none;
-  width: $track-w; height: $track-h;
+  width: $track-w;
+  height: $track-h;
   background: #ccc;
-  border-radius: ($track-h / 2)px;
+  border-radius: $track-h / 2;
 }
 
 @mixin thumb() {
   box-sizing: border-box;
   border: none;
-  width: $thumb-d; height: $thumb-d;
+  width: $thumb-d;
+  height: $thumb-d;
   border-radius: 50%;
   background: $line-color;
 }
@@ -71,7 +73,8 @@ $thumb-d: 12px;
 
     margin: 0;
     padding: 0;
-    width: $track-w; height: $thumb-d;
+    width: $track-w;
+    height: $thumb-d;
     background: transparent;
 
     &::-moz-range-track { @include track; }
@@ -94,10 +97,12 @@ $thumb-d: 12px;
     &, &::-webkit-slider-thumb { -webkit-appearance: none; }
 
     position: absolute;
-    top: 50%; left: 50%;
+    top: 50%;
+    left: 50%;
     margin: 0;
     padding: 0;
-    width: $track-w; height: $thumb-d;
+    width: $track-w;
+    height: $thumb-d;
     transform: translate(-50%, -50%) rotate(-90deg);
     background: transparent;
 

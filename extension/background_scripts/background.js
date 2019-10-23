@@ -71,6 +71,7 @@ const defaultFilters = [
 const state = {
   enabled: true,
   filters: JSON.parse(JSON.stringify(defaultFilters)),
+  preampMultiplier: 1.0,
   presets: {
     'Default': defaultFilters
   },
@@ -86,6 +87,7 @@ const { icons, iconsSelected } = iconSizes.reduce((a, c) => {
 
 const STORAGE_KEY = '::state';
 
+// noinspection DuplicatedCode
 const throttle = function (func, threshold, context) {
   if (!threshold || threshold < 0) threshold = 250;
   let last;
@@ -107,7 +109,10 @@ const throttle = function (func, threshold, context) {
   };
 };
 
-const broadcastMessage = throttle((msg) => $storage.set({ [STORAGE_KEY]: state }).then(() => contentScripts.forEach(p => p.postMessage(msg))), 50);
+const broadcastMessage = throttle((msg) => $storage.set({ [STORAGE_KEY]: state })
+  .then(() => contentScripts.forEach(p => p.postMessage(msg))), 50);
+
+const broadcastState = () => broadcastMessage({ type: 'SET::STATE', state });
 
 $storage.get([STORAGE_KEY])
   .then(g => g[STORAGE_KEY] ? Promise.resolve(Object.assign(state, g[STORAGE_KEY])) : $storage.set({ [STORAGE_KEY]: state }))
@@ -139,12 +144,16 @@ $storage.get([STORAGE_KEY])
           f.q = msg.filter.q;
           f.type = msg.filter.type;
           f.enabled = msg.filter.enabled;
-          broadcastMessage({ type: 'SET::STATE', state });
+          broadcastState();
           break;
         case 'SET::ENABLED':
           state.enabled = msg.enabled;
           browser.browserAction.setIcon({ path: state.enabled ? iconsSelected : icons });
-          broadcastMessage({ type: 'SET::STATE', state });
+          broadcastState();
+          break;
+        case 'SET::PREAMP':
+          state.preampMultiplier = msg.preampMultiplier;
+          broadcastState();
           break;
         default:
           console.error('Unrecognized message: ' + msg);
@@ -156,7 +165,8 @@ $storage.get([STORAGE_KEY])
     browser.runtime.onMessage.addListener(msg => {
       if (msg.type === 'GET::STATE') {
         return Promise.resolve(state);
-      } else if (msg.type === 'DELETE::PRESET') {
+      }
+      /* else if (msg.type === 'DELETE::PRESET') {
         delete state.presets[msg.preset];
         return $storage.set({ [STORAGE_KEY]: state }).then(() => Promise.resolve(state));
       } else if (msg.type === 'SAVE::PRESET') {
@@ -165,7 +175,7 @@ $storage.get([STORAGE_KEY])
           broadcastMessage({ type: 'SET::STATE', state });
           return Promise.resolve(state);
         });
-      }
+      } */
       return Promise.resolve();
     });
   });

@@ -11,13 +11,14 @@ you to play around with the plugin, because it's actually a lot of fun messing w
 
 ## TODO
 - [x] Global Enable/Disable
-- [ ] Presets
-- [ ] Preamp
-- [ ] About/Options page
+- [ ] Presets (canvas image, icon, name)
+- [x] Preamp
+- [ ] Settings dialog
 - [x] Mouse wheel changes Q (when available) in FR plot
 - [x] Mouse wheel changes dials
 - [ ] Configurable wheel multiplier for dials
 - [ ] Cursor consistency
+- [ ] Address TODOs
 
 
 ## Project setup

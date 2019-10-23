@@ -23,8 +23,8 @@
   max-height: 80%;
   margin: 0 auto;
   padding: 12px;
-  background-color: lighten($background, 10%);
-  border-radius: 2px;
+  background-color: $section-color;
+  border-radius: 4px;
   transition: $bezier-transition;
   @include standard-shadow;
 }

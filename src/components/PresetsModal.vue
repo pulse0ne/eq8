@@ -1,8 +1,8 @@
 <template>
-  <transition name="modal">
+  <transition name="modal" appear>
     <div class="modal-mask" @click="$emit('close')">
       <div class="modal-wrapper">
-        <div class="modal-container" @click.stop>
+        <div class="modal-container col" @click.stop>
           <h2>Presets</h2>
         </div>
       </div>

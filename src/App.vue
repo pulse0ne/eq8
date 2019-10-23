@@ -82,7 +82,7 @@
             class="section grow col align-center justify-center"
             v-for="f in frFilters"
             :key="f.id"
-            :class="{ 'selected': selectedFilter && f.id === selectedFilter.id }"
+            :class="{ selected: selectedFilter && f.id === selectedFilter.id, selectable: eqEnabled && f.enabled }"
             @click="selectFilter(f)"
           >
             <Choose
@@ -98,19 +98,48 @@
                 :value="f.enabled"
                 :disabled="!eqEnabled"
                 @input="toggleFilterEnabled(f)"
-              />{{ f.id }}
+              /><span class="no-select">{{ f.id }}</span>
             </div>
           </div>
         </div>
       </div>
       <div class="col section">
-        <div class="grow">
+        <div class="col align-center">
           <div class="master-enable" @click="toggleMasterEnabled" title="Enable/Disable">
             <i class="eq8 power_settings_new" :class="{ enabled: eqEnabled }"></i>
           </div>
         </div>
         <div class="col justify-center align-center">
           <i class="eq8 settings settings-btn" title="Options" @click="settingsOpen = true"></i>
+        </div>
+        <div class="col justify-center align-center">
+          <i class="eq8 tune settings-btn" title="Presets" @click="presetsOpen = true"></i>
+        </div>
+        <div class="col align-center my2 grow justify-flex-end">
+          <div class="dial-label">Preamp</div>
+          <div
+            @click="!eqEnabled ? $noOp : preampDialHandler(1.0)"
+            class="zeroer"
+            :class="{disabled: !eqEnabled}"
+          >
+            <i class="eq8 arrow_drop_down zeroer"></i>
+          </div>
+          <Dial
+            :size="dialSize"
+            :value="preampMultiplier"
+            :min="0"
+            :max="2"
+            :disabled="!eqEnabled"
+            @change="preampDialHandler"
+          />
+          <NumberEditLabel
+            :value="preampMultiplier"
+            :label="toFixed(preampMultiplier)"
+            :min="0"
+            :max="2"
+            :disabled="!eqEnabled"
+            @change="preampDialHandler"
+          />
         </div>
       </div>
     </div>
@@ -158,6 +187,7 @@ export default {
       dialSize: 55,
       filterOptions: opts,
       freqStart: 10.0,
+      preampMultiplier: 1.0,
       selectedFilter: null,
       frAudioContext: new WebAudioContext(),
       frFilters: [],
@@ -172,9 +202,10 @@ export default {
       .then(() => this.selectedFilter = this.frFilters[0]);
   },
   methods: {
-    stateUpdateHandler ({ filters, enabled }) {
+    stateUpdateHandler ({ filters, enabled, preampMultiplier }) {
       this.frFilters = this.$arrayCopy(filters);
       this.eqEnabled = enabled;
+      this.preampMultiplier = preampMultiplier;
       if (this.selectedFilter) {
         this.selectedFilter = this.frFilters.find(f => f.id === this.selectedFilter.id);
       }
@@ -182,6 +213,9 @@ export default {
     gainDialHandler (value) {
       const newFilter = Object.assign(this.selectedFilter, { gain: value });
       port.postMessage({ type: 'SET::FILTER', filter: newFilter });
+    },
+    preampDialHandler (value) {
+      port.postMessage({ type: 'SET::PREAMP', preampMultiplier: value });
     },
     qDialHandler (value) {
       port.postMessage({ type: 'SET::FILTER', filter: Object.assign(this.selectedFilter, { q: value }) });
@@ -281,6 +315,21 @@ body {
   color: #fefefe;
 }
 
+button {
+  cursor: pointer;
+  background-color: black;
+  color: white;
+  padding: 0.5em 2em;
+  border: none;
+  border-radius: 4px;
+  @include standard-shadow;
+
+  &:hover {
+    background-color: #111;
+    @include hover-shadow;
+  }
+}
+
 $_justify_values: flex-start, flex-end, start, end, left, right, center, space-between, space-around, space-evenly;
 @each $v in $_justify_values {
   .justify-#{$v} {
@@ -349,6 +398,10 @@ $_spacer_dirs: top, right, bottom, left;
   margin: 2px;
   transition: background-color $bezier-transition;
 
+  &.selectable:not(.selected):hover {
+    background: lighten($section-color, 5%);
+  }
+
   &.selected {
     background: $selected-section-color;
   }
@@ -360,6 +413,7 @@ $_spacer_dirs: top, right, bottom, left;
 
 .zeroer {
   margin: -0.5em 0;
+  cursor: pointer;
 
   &.disabled i {
     color: $disabled-color;
@@ -405,5 +459,9 @@ $_spacer_dirs: top, right, bottom, left;
   &:hover {
     color: $accent-color;
   }
+}
+
+.no-select {
+  @include no-select;
 }
 </style>
