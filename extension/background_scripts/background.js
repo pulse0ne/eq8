@@ -68,18 +68,27 @@ const defaultFilters = [
   }
 ];
 
+const copyHack = obj => JSON.parse(JSON.stringify(obj));
+
+// https://gist.github.com/jed/982883
+const uuid = a => a
+  ? (a ^ Math.random() * 16 >> a / 4).toString(16)
+  : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuid);
+
 const state = {
   enabled: true,
-  filters: JSON.parse(JSON.stringify(defaultFilters)),
+  filters: copyHack(defaultFilters),
   preampMultiplier: 1.0,
   settings: {
     sensitivity: 4
   },
   presets: {
-    'Default': {
+    'd9c9ad7c-4ba6-4a7d-9f37-2e476fdfafba': {
+      name: 'Default',
       locked: true,
       image: null,
-      filters: defaultFilters
+      icon: 'audiotrack',
+      filters: copyHack(defaultFilters)
     }
   },
   selectedPreset: ''
@@ -170,6 +179,12 @@ $storage.get([STORAGE_KEY])
           state.filters = JSON.parse(JSON.stringify(defaultFilters));
           state.preampMultiplier = 1.0;
           broadcastState();
+          break;
+        case 'SAVE::PRESET':
+          state.presets[uuid()] = msg.preset;
+          break;
+        case 'UPDATE::PRESET':
+          // TODO
           break;
         default:
           console.error('Unrecognized message: ' + msg);

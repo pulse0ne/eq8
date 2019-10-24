@@ -11,9 +11,9 @@ you to play around with the plugin, because it's actually a lot of fun messing w
 
 ## TODO
 - [x] Global Enable/Disable
-- [ ] Presets (canvas image, icon, name)
+- [ ] Presets (canvas image, icon, name; overwrite existing vs. new)
 - [x] Preamp
-- [ ] Settings dialog
+- [x] Settings dialog
 - [x] Mouse wheel changes Q (when available) in FR plot
 - [x] Mouse wheel changes dials
 - [ ] Configurable wheel multiplier for dials

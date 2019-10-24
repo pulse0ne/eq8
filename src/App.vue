@@ -289,6 +289,7 @@ export default {
       console.log(preset.name, preset.icon);
       this.savePresetOpen = false;
       // TODO
+      port.postMessage({ type: 'SAVE::PRESET', TODO: 'TODO' });
     }
   },
   computed: {
