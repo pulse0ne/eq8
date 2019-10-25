@@ -285,11 +285,16 @@ export default {
     handleReset () {
       port.postMessage({ type: 'RESET::FILTERS' });
     },
-    savePreset (preset) {
-      console.log(preset.name, preset.icon);
+    savePreset (presetMeta) {
+      console.log(presetMeta.name, presetMeta.icon);
+      const preset = {
+        name: presetMeta.name,
+        icon: presetMeta.icon,
+        image: this.presetImage,
+        filters: this.frFilters
+      };
+      port.postMessage({ type: 'SAVE::PRESET', preset });
       this.savePresetOpen = false;
-      // TODO
-      port.postMessage({ type: 'SAVE::PRESET', TODO: 'TODO' });
     }
   },
   computed: {

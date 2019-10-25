@@ -181,10 +181,9 @@ $storage.get([STORAGE_KEY])
           broadcastState();
           break;
         case 'SAVE::PRESET':
-          state.presets[uuid()] = msg.preset;
-          break;
-        case 'UPDATE::PRESET':
-          // TODO
+          const presetId = msg.id || uuid();
+          state.presets[presetId] = msg.preset;
+          broadcastState();
           break;
         default:
           console.error('Unrecognized message: ' + msg);
@@ -193,20 +192,5 @@ $storage.get([STORAGE_KEY])
       });
     });
 
-    browser.runtime.onMessage.addListener(msg => {
-      if (msg.type === 'GET::STATE') {
-        return Promise.resolve(state);
-      }
-      /* else if (msg.type === 'DELETE::PRESET') {
-        delete state.presets[msg.preset];
-        return $storage.set({ [STORAGE_KEY]: state }).then(() => Promise.resolve(state));
-      } else if (msg.type === 'SAVE::PRESET') {
-        state.presets[msg.name] = JSON.parse(JSON.stringify(state.filters));
-        return $storage.set({ [STORAGE_KEY]: state }).then(() => {
-          broadcastMessage({ type: 'SET::STATE', state });
-          return Promise.resolve(state);
-        });
-      } */
-      return Promise.resolve();
-    });
+    browser.runtime.onMessage.addListener(msg => msg.type === 'GET::STATE' ? Promise.resolve(state) : Promise.resolve());
   });
