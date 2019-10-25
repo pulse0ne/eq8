@@ -80,7 +80,7 @@ const state = {
   filters: copyHack(defaultFilters),
   preampMultiplier: 1.0,
   settings: {
-    sensitivity: 4
+    sensitivity: 1024
   },
   presets: {
     'd9c9ad7c-4ba6-4a7d-9f37-2e476fdfafba': {
@@ -88,10 +88,10 @@ const state = {
       locked: true,
       image: null,
       icon: 'audiotrack',
-      filters: copyHack(defaultFilters)
+      filters: copyHack(defaultFilters),
+      preampMultiplier: 1.0
     }
-  },
-  selectedPreset: ''
+  }
 };
 
 const iconSizes = [16, 32, 48, 96, 128];
@@ -176,13 +176,23 @@ $storage.get([STORAGE_KEY])
           broadcastState();
           break;
         case 'RESET::FILTERS':
-          state.filters = JSON.parse(JSON.stringify(defaultFilters));
+          state.filters = copyHack(defaultFilters);
           state.preampMultiplier = 1.0;
           broadcastState();
           break;
         case 'SAVE::PRESET':
           const presetId = msg.id || uuid();
           state.presets[presetId] = msg.preset;
+          broadcastState();
+          break;
+        case 'DELETE::PRESET':
+          delete state.presets[msg.id];
+          broadcastState();
+          break;
+        case 'LOAD::PRESET':
+          const pre = state.presets[msg.id];
+          state.filters = copyHack(pre.filters);
+          state.preampMultiplier = pre.preampMultiplier;
           broadcastState();
           break;
         default:

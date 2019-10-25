@@ -31,13 +31,23 @@ import Slider from './Slider';
 export default {
   name: 'SettingsModal',
   props: ['value'],
+  data () {
+    const dataValues = [];
+    for (let x = 0; x < 10; ++x) {
+      dataValues.push(x === 0 ? 64 : dataValues[x - 1] * 2);
+    }
+    dataValues.reverse();
+    return {
+      dataValues
+    };
+  },
   components: {
     Slider
   },
   computed: {
     sensitivity: {
-      get () { return this.value.sensitivity; },
-      set (nv) { this.$emit('input', { ...this.value, sensitivity: nv }); }
+      get () { return this.dataValues.indexOf(this.value.sensitivity); },
+      set (nv) { this.$emit('input', { ...this.value, sensitivity: this.dataValues[nv] }); }
     }
   }
 };

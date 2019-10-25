@@ -42,7 +42,8 @@ export default {
     filters: { type: Array },
     context: { type: AudioContext },
     freqStart: { type: Number },
-    disabled: { type: Boolean }
+    disabled: { type: Boolean },
+    wheelSensitivity: { type: Number }
   },
   data () {
     return {
@@ -237,11 +238,10 @@ export default {
       }
     },
     mousewheel ($event) {
-      // TODO: configurable wheel multiplier
       if (this.disabled) return;
       const active = this.filters.find(f => f.id === this.activeNode);
       if (active && EDITABLE_Q[active.type]) {
-        const q = Math.max(0, Math.min(active.q - $event.deltaY * 0.01, 10));
+        const q = Math.max(0, Math.min(active.q - $event.deltaY / (this.wheelSensitivity / 10), 10));
         this.$emit('filter-changed', { id: active.id, q });
       }
     },

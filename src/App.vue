@@ -10,6 +10,7 @@
             :min="0"
             :max="1"
             :disabled="freqDisabled"
+            :wheel-sensitivity="settings.sensitivity"
             @change="freqDialHandler"
           />
           <NumberEditLabel
@@ -36,6 +37,7 @@
             :min="-20"
             :max="20"
             :disabled="gainDisabled"
+            :wheel-sensitivity="settings.sensitivity"
             @change="gainDialHandler"
           />
           <NumberEditLabel
@@ -55,6 +57,7 @@
             :min="0"
             :max="10"
             :disabled="qDisabled"
+            :wheel-sensitivity="settings.sensitivity"
             @change="qDialHandler"
           />
           <NumberEditLabel
@@ -74,6 +77,7 @@
           :context="frAudioContext"
           :freq-start="freqStart"
           :active-node="selectedFilter ? selectedFilter.id : null"
+          :wheel-sensitivity="settings.sensitivity"
           @handle-selected="handleSelected"
           @filter-changed="frFilterChanged"
         />
@@ -136,6 +140,7 @@
             :min="0"
             :max="2"
             :disabled="!eqEnabled"
+            :wheel-sensitivity="settings.sensitivity"
             @change="preampDialHandler"
           />
           <NumberEditLabel
@@ -150,7 +155,7 @@
       </div>
     </div>
     <SettingsModal v-if="settingsOpen" @close="settingsOpen = false" v-model="settingsValue" />
-    <PresetsModal v-if="presetsOpen" @close="presetsOpen = false" v-model="presetsValue" />
+    <PresetsModal v-if="presetsOpen" @close="presetsOpen = false" v-model="presetsValue" @delete="deletePreset" @load="loadPreset" />
     <SavePresetModal v-if="savePresetOpen" @close="savePresetOpen = false" :img="presetImage" @save="savePreset" />
   </div>
 </template>
@@ -220,7 +225,7 @@ export default {
       this.frFilters = this.$arrayCopy(filters);
       this.eqEnabled = enabled;
       this.preampMultiplier = preampMultiplier;
-      this.settings = settings;
+      this.settings = this.$arrayCopy(settings);
       this.presets = presets;
       if (this.selectedFilter) {
         this.selectedFilter = this.frFilters.find(f => f.id === this.selectedFilter.id && f.enabled);
@@ -286,15 +291,22 @@ export default {
       port.postMessage({ type: 'RESET::FILTERS' });
     },
     savePreset (presetMeta) {
-      console.log(presetMeta.name, presetMeta.icon);
       const preset = {
         name: presetMeta.name,
         icon: presetMeta.icon,
         image: this.presetImage,
-        filters: this.frFilters
+        filters: this.frFilters,
+        preampMultiplier: this.preampMultiplier
       };
       port.postMessage({ type: 'SAVE::PRESET', preset });
       this.savePresetOpen = false;
+    },
+    loadPreset (presetId) {
+      port.postMessage({ type: 'LOAD::PRESET', id: presetId });
+      this.presetsOpen = false;
+    },
+    deletePreset (presetId) {
+      port.postMessage({ type: 'DELETE::PRESET', id: presetId });
     }
   },
   computed: {
@@ -328,11 +340,11 @@ export default {
     },
     presetsValue: {
       get () { return this.presets; },
-      set (nv) { port.postMessage({ type: 'SET::PRESETS', presets: nv }); }
+      set (nv) { console.log('here'); port.postMessage({ type: 'SET::PRESETS', presets: nv }); }
     },
     settingsValue: {
       get () { return this.settings; },
-      set (nv) { port.postMessage({ type: 'SET::SETTINGS', settings: nv }); }
+      set (nv) { console.log(nv); port.postMessage({ type: 'SET::SETTINGS', settings: nv }); }
     }
   },
   watch: {
@@ -378,6 +390,11 @@ button {
 
   &:disabled {
     background-color: #666;
+  }
+
+  &.small {
+    padding: 0.35em 1.5em;
+    font-size: 0.9em;
   }
 }
 

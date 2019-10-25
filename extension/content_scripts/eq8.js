@@ -1,27 +1,4 @@
 (function () {
-  // const _exampleState = {
-  //   enabled: true,
-  //   filters: [
-  //     {
-  //       id: 1,
-  //       type: 'peaking',
-  //       q: 1.0,
-  //       frequency: 64,
-  //       gain: 5.0,
-  //       enabled: true
-  //     },
-  //     {
-  //       id: 2,
-  //       type: 'notch',
-  //       q: 2.0,
-  //       frequency: 640,
-  //       gain: -5.0,
-  //       enabled: false
-  //     }
-  //     // ...etc.
-  //   ]
-  // };
-
   class EQ8 {
     constructor () {
       this.WebAudioContext = (window.AudioContext || window.webkitAudioContext);
@@ -63,7 +40,7 @@
       });
       const preamp = context.createGain();
       preamp.gain.value = preampMultiplier;
-      const pipeline = { context, source, filters: elFilters, preamp };
+      const pipeline = { context, source, filters: elFilters, preamp, element };
       this.arrangeFilters(pipeline);
       this.pipelines.add(pipeline);
     }
@@ -102,11 +79,16 @@
       mediaElements
         .filter(el => !el.eq8)
         .forEach(el => {
-          console.log('eq8: new audio source discovered');
+          console.log('[eq8]: new audio source discovered');
           el.eq8 = true;
           this.createPipelineForElement(el);
         });
-      // TODO: technically there's a memory leak here because if a media element is removed from the page, we don't stop tracking it
+      for (let i = this.pipelines.size; i > 0; i--) {
+        if (!mediaElements.includes(this.pipeline.element)) {
+          console.log('[eq8]: media element removed');
+          this.pipelines.splice(i, 1);
+        }
+      }
     }
 
     throttle (func, threshold, context) {

@@ -1,7 +1,8 @@
+![](https://raw.githubusercontent.com/pulse0ne/eq8/master/extension/icons/icon-128.png)
 # eq8
 >Pronounced 'equate'
 
-**eq8** is a web browser plugin (uses the [Web Extensions API](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions)) that 
+**eq8** is a web browser plugin (using the [Web Extensions API](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions)) that 
 brings a full-fledged parametric equalizer right to your browser. This allows you to equalize all of the HTML5 Audio/Video elements on any
 web page to your liking: YouTube&trade; videos, in-browser mp3's, etc. eq8 was inspired by Ableton&reg; Live&trade;'s awesome EQ Eight 
 equalizer, and works similarly.
@@ -9,17 +10,6 @@ equalizer, and works similarly.
 If you're feeling lost, there are some excellent videos online detailing how to effectively use an equalizer. That being said, I encourage
 you to play around with the plugin, because it's actually a lot of fun messing with the sounds in real-time.
 
-## TODO
-- [x] Global Enable/Disable
-- [ ] Presets (canvas image, icon, name; overwrite existing vs. new)
-- [x] Preamp
-- [x] Settings dialog
-- [x] Mouse wheel changes Q (when available) in FR plot
-- [x] Mouse wheel changes dials
-- [ ] Configurable wheel multiplier for dials
-- [ ] Cursor consistency
-- [ ] Address TODOs
-- [ ] Error handling/reporting
 
 
 ## Project setup

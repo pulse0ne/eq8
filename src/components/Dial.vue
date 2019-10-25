@@ -19,7 +19,8 @@ export default {
     min: { type: Number, default: 0 },
     max: { type: Number, default: 100 },
     size: { type: Number, default: 100 },
-    disabled: { type: Boolean, default: false }
+    disabled: { type: Boolean, default: false },
+    wheelSensitivity: { type: Number, default: 2048 }
   },
   data () {
     return {
@@ -125,7 +126,7 @@ export default {
       if (this.disabled) return;
       const { deltaY } = $event;
       const { min, max } = this;
-      const scale = (max - min) / 2048; // TODO configurable (options) scale
+      const scale = (max - min) / this.wheelSensitivity;
       const d = -deltaY * scale;
       const nv = Math.max(min, Math.min(this.value + d, max));
       if (d !== 0) {
