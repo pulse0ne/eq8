@@ -3,7 +3,7 @@
     constructor () {
       this.WebAudioContext = (window.AudioContext || window.webkitAudioContext);
       this.DOMMutationObserver = (window.MutationObserver || window.webkitMutationObserver);
-      this.pipelines = new Set();
+      this.pipelines = [];
       this.state = {};
       this.observer = null;
     }
@@ -42,7 +42,7 @@
       preamp.gain.value = preampMultiplier;
       const pipeline = { context, source, filters: elFilters, preamp, element };
       this.arrangeFilters(pipeline);
-      this.pipelines.add(pipeline);
+      this.pipelines.push(pipeline);
     }
 
     updatePipelines () {
@@ -83,8 +83,9 @@
           el.eq8 = true;
           this.createPipelineForElement(el);
         });
+
       for (let i = this.pipelines.size; i > 0; i--) {
-        if (!mediaElements.includes(this.pipeline.element)) {
+        if (!mediaElements.includes(this.pipelines[i].element)) {
           console.log('[eq8]: media element removed');
           this.pipelines.splice(i, 1);
         }
