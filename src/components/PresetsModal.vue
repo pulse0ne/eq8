@@ -79,7 +79,14 @@ export default {
 <style lang="scss" scoped>
 @import '../styles/base';
 
+.modal-wrapper {
+  width: 80%;
+  height: 90%;
+}
+
 .presets-wrapper {
+  width: 100%;
+  height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -87,9 +94,6 @@ export default {
 .preset-entry {
   cursor: pointer;
 
-  &:not(:last-child) {
-    border-bottom: $light-border;
-  }
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
   }

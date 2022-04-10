@@ -4,19 +4,29 @@
       <div class="modal-wrapper">
         <div class="modal-container col" @click.stop>
           <h2>Settings</h2>
-          <div class="settings-wrap">
-            <div class="row align-start settings-section">
-              <span class="mr3">Mousewheel Sensitivity:</span>
-              <div class="col">
+          <div class="settings-table">
+            <div class="settings-line">
+              <span class="settings-cell mr3">Mousewheel Sensitivity:</span>
+              <div class="settings-cell slider-and-labels-wrapper">
                 <Slider :min="0" :max="9" :step="1" v-model="sensitivity" orient="horizontal" />
-                <div class="row grow justify-space-between mt1">
+                <div class="row justify-space-between mt1">
+                  <small>Less</small>
+                  <small>More</small>
+                </div>
+              </div>
+            </div>
+            <div class="settings-line">
+              <span class="settings-cell mr3">Mousewheel Sensitivity  dfasfdsafsdfasfewrwer:</span>
+              <div class="settings-cell slider-and-labels-wrapper">
+                <Slider :min="0" :max="9" :step="1" v-model="sensitivity" orient="horizontal" />
+                <div class="row justify-space-between mt1">
                   <small>Less</small>
                   <small>More</small>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col grow justify-flex-end align-center">
+          <div class="col grow justify-center align-center">
             <button @click="$emit('close')">Close</button>
           </div>
         </div>
@@ -56,10 +66,34 @@ export default {
 <style lang="scss" scoped>
 @import '../styles/base';
 
-.settings-section {
+.modal-container {
+  width: unset;
+  height: unset;
+  min-width: 80%;
+  max-width: 100%;
+  max-height: 80%;
+}
+
+.settings-table {
+  width: 100%;
   padding: 12px 24px;
-  &:not(:last-child) {
-    border-bottom: $light-border;
+  display: table;
+}
+
+.settings-line {
+  display: table-row;
+}
+
+.settings-cell {
+  display: table-cell;
+  padding: 6px 0;
+}
+
+.slider-and-labels-wrapper {
+  @include flexbox-centered;
+  & > * {
+    width: 100%;
   }
 }
+
 </style>
