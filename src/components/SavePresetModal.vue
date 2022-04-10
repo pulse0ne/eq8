@@ -2,9 +2,9 @@
     <transition name="modal" appear>
       <div class="modal-mask" @click="$emit('close')">
         <div class="modal-wrapper">
-          <div class="modal-container col" @click.stop>
+          <div class="modal-container" @click.stop>
             <h2>Save Preset</h2>
-            <div class="mx4 my2 row align-center justify-space-evenly">
+            <div class="preset-name-row-wrapper mx4 my2 row align-center justify-space-evenly">
               <div>
                 <img :src="img" alt="Preset Screenshot" v-if="img">
               </div>
@@ -68,8 +68,15 @@ export default {
 .modal-container {
   width: unset;
   height: unset;
-  max-width: 80%;
+  min-width: 80%;
+  max-width: 100%;
   max-height: 80%;
+}
+
+.preset-name-row-wrapper {
+  @include flexbox-centered;
+  flex-direction: row;
+  min-width: 80%;
 }
 
 img {

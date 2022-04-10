@@ -36,7 +36,7 @@ export default {
 <style lang="scss" scoped>
 @import '../styles/base';
 
-$track-w: 128px;
+$track-w: 100%;
 $track-h: 4px;
 $thumb-d: 12px;
 
