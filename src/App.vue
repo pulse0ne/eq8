@@ -372,6 +372,7 @@ body {
   font-family: 'Open Sans', sans-serif;
   background-color: $background;
   color: #fefefe;
+  overflow-x: auto;
 }
 
 button {
@@ -449,6 +450,7 @@ $_spacer_dirs: top, right, bottom, left;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 4px;
+  min-width: 750px;
 }
 
 .dial-wrapper {

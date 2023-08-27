@@ -12,7 +12,7 @@
     "email": "snedigart@gmail.com"
   },
   "scripts": {
-    "build": "vue-cli-service build",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider vue-cli-service build",
     "build:watch": "vue-cli-service build --watch",
     "lint": "vue-cli-service lint",
     "start": "web-ext run --source-dir ./extension --verbose --no-config-discovery"
