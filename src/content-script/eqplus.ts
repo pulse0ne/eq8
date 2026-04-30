@@ -91,14 +91,14 @@ function mutationHandler() {
   mediaElements
     .filter((el) => el.getAttribute("eqplus") !== "true")
     .forEach((el) => {
-      console.log("[eq+]: new audio source discovered");
+      console.log("[eq8]: new audio source discovered");
       el.setAttribute("eqplus", "true");
       createPipelineForElement(el);
     });
 
   for (let i = filterBanks.length - 1; i > 0; i--) {
     if (!mediaElements.includes(filterBanks[i].element)) {
-      console.log("[eq+]: media element removed");
+      console.log("[eq8]: media element removed");
       filterBanks.splice(i, 1);
     }
   }

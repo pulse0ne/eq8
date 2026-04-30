@@ -1,7 +1,7 @@
 {
-  "name": "eqplus-ff",
+  "name": "eq8",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "build": "yarn build:background && yarn build:content-script && yarn build:popup",

@@ -48,7 +48,7 @@ function exportPresets() {
     const folder = zip.folder("eqplus-presets");
     presets.forEach(preset => {
       const lines = [
-        "# This preset was exported from eq+",
+        "# This preset was exported from eq8",
         `# [VERSION] : ${version}`,
         `# [NAME]    : ${preset.name}`,
         `# [DATE]    : ${date}`

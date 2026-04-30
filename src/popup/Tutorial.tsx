@@ -14,7 +14,7 @@ type TutorialStep = {
 
 const tutorialSteps: TutorialStep[] = [
   {
-    message: "Welcome to eq+! This tutorial will guide you through the various features. Or, if you're familiar with audio equalization and ready to jump in, you can skip the tutorial altogether.",
+    message: "Welcome to eq8! This tutorial will guide you through the various features. Or, if you're familiar with audio equalization and ready to jump in, you can skip the tutorial altogether.",
     blurbLocation: "center",
     actionsType: "START"
   },

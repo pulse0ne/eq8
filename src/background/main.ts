@@ -131,7 +131,7 @@ function setupListeners() {
     }
   }) as (m: object) => void);
 
-  console.log("[eq+]: background script listeners initialized");
+  console.log("[eq8]: background script listeners initialized");
 }
 
 migrateLegacyState().then(setupListeners);
