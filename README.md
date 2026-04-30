@@ -4,8 +4,7 @@
 
 **eq8** is a web browser plugin (using the [Web Extensions API](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions)) that 
 brings a full-fledged parametric equalizer right to your browser. This allows you to equalize all of the HTML5 Audio/Video elements on any
-web page to your liking: YouTube&trade; videos, in-browser mp3's, etc. eq8 was inspired by Ableton&reg; Live&trade;'s awesome EQ Eight 
-equalizer, and works similarly.
+web page to your liking: YouTube&trade; videos, in-browser mp3's, etc.
 
 If you're feeling lost, there are some excellent videos online detailing how to effectively use an equalizer. That being said, I encourage
 you to play around with the plugin, because it's actually a lot of fun messing with the sounds in real-time.
@@ -14,28 +13,14 @@ you to play around with the plugin, because it's actually a lot of fun messing w
 
 ## Project setup
 ```
-npm install
+yarn
 ```
 
-### Compile and hot-reload for development
+### Build
 ```
-npm run build:watch
-```
-
-### Compile and minify for production
-```
-npm run build
+yarn build
 ```
 
-### Runs the plugin as a temporary extension in Firefox
-```
-npm run start
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
 ---
 ---
 #### Legal Stuff
