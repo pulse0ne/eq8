@@ -7,7 +7,7 @@
 export function load<T> (key: string, defaultValue: T): Promise<T> {
   return browser.storage.local.get(key)
     .then(res => {
-      if (!res[key]) {
+      if (res[key] === undefined) {
         if (defaultValue !== null) {
           browser.storage.local.set({ [key]: defaultValue });
         }

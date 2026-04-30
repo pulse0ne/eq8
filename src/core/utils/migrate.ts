@@ -1,7 +1,7 @@
 import { StorageKeys } from "../storage-keys.ts";
 import { EQState } from "../types/equalizer.ts";
 import { Preset } from "../types/preset.ts";
-import { toScalar } from "./scalarDecibelConverter.ts";
+import { toDecibel, toScalar } from "./scalarDecibelConverter.ts";
 import { clear, load, save } from "./storageUtils.ts";
 import uuid from "./uuid.ts";
 
@@ -34,7 +34,7 @@ export function migrateLegacyState(): Promise<void> {
     const { enabled, preampMultiplier, filters, presets } = maybeLegacyState;
     const newState: EQState = {
       enabled: enabled || false,
-      preamp: toScalar(preampMultiplier || 1.0),
+      preamp: toDecibel(preampMultiplier || 1.0),
       filters: filters.filter(f => f.enabled).map(f => ({
         id: uuid(),
         frequency: f.frequency || 100.0,
@@ -57,7 +57,7 @@ export function migrateLegacyState(): Promise<void> {
         gain: f.gain,
         type: f.type as any as BiquadFilterType,
       })),
-      preampGain: toScalar(p.preampMultiplier)
+      preampGain: toDecibel(p.preampMultiplier)
     }));
 
     save(StorageKeys.PRESETS, newPresets);

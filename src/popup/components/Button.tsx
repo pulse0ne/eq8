@@ -22,6 +22,6 @@ const StyledButton = styled.button`
   }
 `;
 
-const Button = (props: ButtonHTMLAttributes<HTMLButtonElement>) => <StyledButton {...props} className={`themed accentSecondary accentPrimary disabled background ${props.className}`} />;
+const Button = (props: ButtonHTMLAttributes<HTMLButtonElement>) => <StyledButton {...props} className={`themed accentSecondary accentPrimary disabled background ${props.className ?? ""}`} />;
 
 export { Button };

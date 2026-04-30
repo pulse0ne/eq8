@@ -1,7 +1,7 @@
-import { EQState } from "./types/equalizer.js";
-import { FilterParams } from "./types/filter.js";
-import { UserSettings } from "./types/settings.js";
-import { Theme } from "./types/theme.js";
+import { EQState } from "./types/equalizer.ts";
+import { FilterParams } from "./types/filter.ts";
+import { UserSettings } from "./types/settings.ts";
+import { Theme } from "./types/theme.ts";
 
 const DEFAULT_FILTERS: FilterParams[] = [48, 225, 1067, 5060].map(f => {
   return { id: `default-${f}`, frequency: f, gain: 0.0, q: 1.0, type: "peaking" };

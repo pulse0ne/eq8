@@ -5,7 +5,8 @@ export default defineConfig({
   root: "./src/content-script",
   build: {
     lib: {
-      formats: ["es"],
+      formats: ["iife"],
+      name: "contentScript",
       entry: "./eqplus.ts"
     },
     outDir: "../../extension/content-script",

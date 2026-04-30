@@ -222,7 +222,8 @@ function importPreset(file: Blob): Promise<WithSoftErrors<{ preset: Preset}>> {
   }).then(result => {
     update<Preset[]>(StorageKeys.PRESETS, [], existing => {
       if (existing.some(p => p.name.toLowerCase() === result.preset.name.toLowerCase())) {
-        throw Error("preset already exists");
+        console.warn(`[eq8]: Preset with name "${result.preset.name}" already exists`);
+        return existing;
       }
       return [...existing, result.preset];
     });

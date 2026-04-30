@@ -59,20 +59,33 @@ function createPipelineForElement(element: HTMLMediaElement) {
 
 function updatePipelines() {
   filterBanks.forEach((bank) => {
-    const { source, filters, preamp } = bank;
+    const { context, source, filters, preamp } = bank;
+
+    bank.filters = filters.filter(
+      (node) => state.filters.some((f) => f.id === node.id)
+    );
+
     state.filters.forEach((f) => {
-      const entry = filters.find(i => i.id === f.id);
-      if (!entry) return;
-      const filter = entry.filter;
-      filter.frequency.value = f.frequency;
-      filter.type = f.type;
-      filter.Q.value = f.q;
-      filter.gain.value = f.gain;
+      const entry = bank.filters.find((i) => i.id === f.id);
+      if (entry) {
+        entry.filter.frequency.value = f.frequency;
+        entry.filter.type = f.type;
+        entry.filter.Q.value = f.q;
+        entry.filter.gain.value = f.gain;
+      } else {
+        const node = context.createBiquadFilter();
+        node.frequency.value = f.frequency;
+        node.type = f.type;
+        node.Q.value = f.q;
+        node.gain.value = f.gain;
+        bank.filters.push({ filter: node, id: f.id });
+      }
     });
+
     preamp.gain.value = toScalar(state.preamp);
     source.disconnect();
     preamp.disconnect();
-    filters.forEach(f => f.filter.disconnect());
+    filters.forEach((f) => f.filter.disconnect());
     arrangeFilters(bank);
   });
 }

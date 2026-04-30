@@ -48,7 +48,6 @@ function NumberEditLabel({
   }, [edit]);
 
   const labelClicked = useCallback(() => {
-    console.log(value);
     if (disabled) return;
     setValInternal(value.toString());
     setEdit(true);

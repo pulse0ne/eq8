@@ -100,34 +100,28 @@ function setupListeners() {
     console.debug("got message:", message);
     switch (message.type) {
       case "getState":
-        loadState().then(broadcastState);
-        break;
+        return loadState().then(broadcastState);
       case "addFilter":
-        handleAddFilter(message.payload as FilterParams)
+        return handleAddFilter(message.payload as FilterParams)
           .then(broadcastState);
-        break;
       case "removeFilter":
-        handleRemoveFilter(message.payload as string)
+        return handleRemoveFilter(message.payload as string)
           .then(broadcastState);
-        break;
       case "updateFilter":
-        handleUpdateFilter(message.payload as FilterParams)
+        return handleUpdateFilter(message.payload as FilterParams)
           .then(broadcastState);
-        break;
       case "updatePreamp":
-        handleUpdatePreamp(message.payload as number)
+        return handleUpdatePreamp(message.payload as number)
           .then(broadcastState);
-        break;
       case "setFilters":
-        handleSetFilters(message.payload as FilterParams[])
+        return handleSetFilters(message.payload as FilterParams[])
           .then(broadcastState);
-        break;
       case "updateEnabled":
-        handleUpdateEnabled(message.payload as boolean)
+        return handleUpdateEnabled(message.payload as boolean)
           .then(broadcastState);
-        break;
       default:
         handleUnknown(message);
+        return Promise.resolve();
     }
   }) as (m: object) => void);
 

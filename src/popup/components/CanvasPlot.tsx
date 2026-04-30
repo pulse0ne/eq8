@@ -138,9 +138,6 @@ export class CanvasPlot extends Component<CanvasPlotProps, CanvasPlotState> {
       if (ix > 0) {
         bqf.connect(nodes[ix - 1]);
       }
-      if (ix === filters.length - 1) {
-        bqf.connect(AUDIO_CONTEXT.destination);
-      }
       nodes.push(bqf);
     });
     this.filterNodes = nodes;

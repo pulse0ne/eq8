@@ -165,7 +165,11 @@ function Tutorial({ onDone }: TutorialProps) {
     const step = tutorialSteps[currentStep];
     setCurrentInfo(step);
     if (step.elementId) {
-      const el = document.getElementById(step.elementId)!;
+      const el = document.getElementById(step.elementId);
+      if (!el) {
+        onDone();
+        return;
+      }
       const { x, y, width: w, height: h } = el.getBoundingClientRect();
 
       setIndicatorRect({ x, y, w, h });

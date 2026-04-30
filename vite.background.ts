@@ -5,7 +5,8 @@ export default defineConfig({
   root: "./src/background",
   build: {
     lib: {
-      formats: ["es"],
+      formats: ["iife"],
+      name: "background",
       entry: "./main.ts"
     },
     outDir: "../../extension/background",

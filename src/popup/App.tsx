@@ -46,11 +46,14 @@ function App() {
     load(StorageKeys.THEME_STATE, { currentTheme: DEFAULT_THEMES[0] }).then(state => {
       setTheme(state.currentTheme);
     });
+
     load(StorageKeys.EQ_STATE, DEFAULT_STATE).then(state => {
       setFilters(state.filters);
       setPreamp(state.preamp);
       setBypassed(!state.enabled);
     });
+
+    load(StorageKeys.SETTINGS, DEFAULT_SETTINGS).then(settings => setSettings(settings));
 
     load(StorageKeys.TUTORIAL_SEEN, false).then(val => setShowTutorial(!val));
   }, []);

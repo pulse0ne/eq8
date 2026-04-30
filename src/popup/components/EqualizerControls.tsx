@@ -89,7 +89,7 @@ function EqualizerControls({
         setSelectedIndex(0);
       }
     } else {
-      if (filters.length > lastFiltersLength) { // use added a new filter
+      if (filters.length > lastFiltersLength) { // user added a new filter
         setSelectedIndex(filters.length - 1);
         setLastFiltersLength(filters.length);
       } else if (filters.length < lastFiltersLength) { // user removed a filter

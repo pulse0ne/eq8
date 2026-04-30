@@ -11,7 +11,7 @@ const GlobalStyles = createGlobalStyle`
     width: 800px;
     margin: 0;
     padding: 0;
-    font-family: Roboto, "Helvetica Neue", Arial, sans-serif;;
+    font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 12px;
     background-color: ${({ theme }) => theme.colors.background};
     color: ${({ theme }) => theme.colors.text};
