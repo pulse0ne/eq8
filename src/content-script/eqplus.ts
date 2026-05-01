@@ -109,7 +109,7 @@ function mutationHandler() {
       createPipelineForElement(el);
     });
 
-  for (let i = filterBanks.length - 1; i > 0; i--) {
+  for (let i = filterBanks.length - 1; i >= 0; i--) {
     if (!mediaElements.includes(filterBanks[i].element)) {
       console.log("[eq8]: media element removed");
       filterBanks.splice(i, 1);

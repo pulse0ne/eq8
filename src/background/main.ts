@@ -25,6 +25,11 @@ const saveStateDebounced: (state: EQState) => void = debounce((state: EQState) =
   save(StorageKeys.EQ_STATE, state);
 }, 250);
 
+function saveAndBroadcastState(state: EQState) {
+  saveStateDebounced(state);
+  broadcastState(state);
+}
+
 async function handleUpdateFilter(updatedFilter: FilterParams): Promise<EQState>{
   const state = await loadState();
   const filterToUpdate = state.filters.find(f => f.id === updatedFilter.id);
@@ -33,7 +38,7 @@ async function handleUpdateFilter(updatedFilter: FilterParams): Promise<EQState>
     filterToUpdate.gain = updatedFilter.gain;
     filterToUpdate.q = updatedFilter.q;
     filterToUpdate.type = updatedFilter.type;
-    saveStateDebounced(state);
+    saveAndBroadcastState(state);
   }
   return state;
 }
@@ -42,7 +47,7 @@ async function handleUpdatePreamp(preampValue: number): Promise<EQState> {
   const state = await loadState();
   if (Number.isFinite(preampValue)) {
     state.preamp = preampValue;
-    saveStateDebounced(state);
+    saveAndBroadcastState(state);
   }
   return state;
 }
@@ -51,7 +56,7 @@ async function handleAddFilter(filter: FilterParams): Promise<EQState> {
   const state = await loadState();
   const newFilters = [...state.filters, filter];
   const newState = { ...state, filters: newFilters };
-  saveStateDebounced(newState);
+  saveAndBroadcastState(newState);
   return newState;
 }
 
@@ -60,7 +65,7 @@ async function handleRemoveFilter(id: string): Promise<EQState> {
   const filterIndex = state.filters.findIndex(f => f.id === id);
   if (filterIndex > -1) {
     state.filters.splice(filterIndex, 1);
-    saveStateDebounced(state);
+    saveAndBroadcastState(state);
   }
   return state;
 }
@@ -68,14 +73,14 @@ async function handleRemoveFilter(id: string): Promise<EQState> {
 async function handleSetFilters(filters: FilterParams[]): Promise<EQState> {
   const state = await loadState();
   state.filters = filters;
-  saveStateDebounced(state);
+  saveAndBroadcastState(state);
   return state;
 }
 
 async function handleUpdateEnabled(enabled: boolean): Promise<EQState> {
   const state = await loadState();
   state.enabled = enabled;
-  saveStateDebounced(state);
+  saveAndBroadcastState(state);
   return state;
 }
 
@@ -100,25 +105,22 @@ function setupListeners() {
     console.debug("got message:", message);
     switch (message.type) {
       case "getState":
-        return loadState().then(broadcastState);
+        return loadState().then((state) => {
+          broadcastState(state);
+          return state;
+        });
       case "addFilter":
-        return handleAddFilter(message.payload as FilterParams)
-          .then(broadcastState);
+        return handleAddFilter(message.payload as FilterParams);
       case "removeFilter":
-        return handleRemoveFilter(message.payload as string)
-          .then(broadcastState);
+        return handleRemoveFilter(message.payload as string);
       case "updateFilter":
-        return handleUpdateFilter(message.payload as FilterParams)
-          .then(broadcastState);
+        return handleUpdateFilter(message.payload as FilterParams);
       case "updatePreamp":
-        return handleUpdatePreamp(message.payload as number)
-          .then(broadcastState);
+        return handleUpdatePreamp(message.payload as number);
       case "setFilters":
-        return handleSetFilters(message.payload as FilterParams[])
-          .then(broadcastState);
+        return handleSetFilters(message.payload as FilterParams[]);
       case "updateEnabled":
-        return handleUpdateEnabled(message.payload as boolean)
-          .then(broadcastState);
+        return handleUpdateEnabled(message.payload as boolean);
       default:
         handleUnknown(message);
         return Promise.resolve();
