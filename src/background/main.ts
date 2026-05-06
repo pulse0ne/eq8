@@ -130,6 +130,10 @@ function setupListeners() {
   console.log("[eq8]: background script listeners initialized");
 }
 
-migrateLegacyState().then(setupListeners);
+migrateLegacyState()
+  .catch((error) => {
+    console.error("[eq8]: legacy state migration failed", error);
+  })
+  .finally(setupListeners);
 
 export { }; // IMPORTANT: keep this
