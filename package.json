@@ -1,45 +1,36 @@
 {
   "name": "eq8",
-  "version": "0.0.3",
-  "author": "Tyler Snedigar <snedigart@gmail.com>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pulse0ne/eq8"
-  },
-  "bugs": {
-    "url": "https://github.com/pulse0ne/eq8/issues",
-    "email": "snedigart@gmail.com"
-  },
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
   "scripts": {
-    "build": "NODE_OPTIONS=--openssl-legacy-provider vue-cli-service build",
-    "build:watch": "vue-cli-service build --watch",
-    "lint": "vue-cli-service lint",
-    "start": "web-ext run --source-dir ./extension --verbose --no-config-discovery"
+    "build": "yarn build:background && yarn build:content-script && yarn build:popup",
+    "build:popup": "tsc -p ./src/popup --noEmit && vite --config vite.popup.ts build",
+    "build:background": "tsc -p ./src/background --noEmit && vite --config vite.background.ts build",
+    "build:content-script": "tsc -p ./src/content-script --noEmit && vite --config vite.content-script.ts build"
   },
   "dependencies": {
-    "vue": "^2.6.10"
+    "clsx": "^2.1.1",
+    "color2k": "^2.0.3",
+    "jszip": "^3.10.1",
+    "react": "^19.2.5",
+    "react-colorful": "^5.6.1",
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^7.14.2",
+    "styled-components": "^6.4.1"
   },
   "devDependencies": {
-    "@vue/cli-plugin-eslint": "^3.11.0",
-    "@vue/cli-service": "^3.11.0",
-    "@vue/eslint-config-standard": "^4.0.0",
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.16.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "lint-staged": "^8.1.5",
-    "sass": "^1.23.0",
-    "sass-loader": "^8.0.0",
-    "vue-template-compiler": "^2.6.10",
-    "web-ext": "^3.2.0"
-  },
-  "gitHooks": {
-    "pre-commit": "lint-staged"
-  },
-  "lint-staged": {
-    "*.{js,vue}": [
-      "vue-cli-service lint",
-      "git add"
-    ]
+    "@types/firefox-webext-browser": "^143.0.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@typescript-eslint/eslint-plugin": "^8.59.0",
+    "@typescript-eslint/parser": "^8.59.0",
+    "@vitejs/plugin-react": "^6.0.1",
+    "chalk": "^5.6.2",
+    "eslint": "^10.2.1",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.10"
   }
 }
