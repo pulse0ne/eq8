@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "yarn build:background && yarn build:content-script && yarn build:popup",
-    "build:popup": "tsc -b ./src/popup && vite --config vite.popup.ts build",
-    "build:background": "tsc -b ./src/background && vite --config vite.background.ts build",
-    "build:content-script": "tsc -b ./src/content-script && vite --config vite.content-script.ts build"
+    "build:popup": "tsc -p ./src/popup --noEmit && vite --config vite.popup.ts build",
+    "build:background": "tsc -p ./src/background --noEmit && vite --config vite.background.ts build",
+    "build:content-script": "tsc -p ./src/content-script --noEmit && vite --config vite.content-script.ts build"
   },
   "dependencies": {
     "clsx": "^2.1.1",
