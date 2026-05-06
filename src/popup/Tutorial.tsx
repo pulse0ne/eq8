@@ -118,10 +118,10 @@ const centeredProperties: CSSProperties = {
   transform: "translate(-50%, -50%)"
 };
 
-const fullWidth = 800;
-const fullHeight = 600;
 const pad = 6;
 const calculateBlurbPosition = (indicatorRect: Rect, location: Location) => {
+  const fullHeight = window.innerHeight;
+  const fullWidth = window.innerWidth;
   const styleParams: CSSProperties = {};
   if (location === "center") return centeredProperties;
   switch (location) {

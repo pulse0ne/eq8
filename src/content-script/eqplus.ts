@@ -112,7 +112,11 @@ function mutationHandler() {
   for (let i = filterBanks.length - 1; i >= 0; i--) {
     if (!mediaElements.includes(filterBanks[i].element)) {
       console.log("[eq8]: media element removed");
-      filterBanks.splice(i, 1);
+      const removed = filterBanks.splice(i, 1);
+      removed[0].source.disconnect();
+      removed[0].preamp.disconnect();
+      removed[0].filters.forEach((f) => f.filter.disconnect());
+      removed[0].context.close();
     }
   }
 }
@@ -127,6 +131,7 @@ function init() {
     }
     const domListener = throttle(mutationHandler, 250);
     observer = new MutationObserver(domListener);
+    mutationHandler(); // kick off the first scan
     observer.observe(document.body, { childList: true, subtree: true });
   });
 }

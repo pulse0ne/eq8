@@ -1,7 +1,7 @@
 import { StorageKeys } from "../storage-keys.ts";
 import { EQState } from "../types/equalizer.ts";
 import { Preset } from "../types/preset.ts";
-import { toDecibel, toScalar } from "./scalarDecibelConverter.ts";
+import { toDecibel } from "./scalarDecibelConverter.ts";
 import { clear, load, save } from "./storageUtils.ts";
 import uuid from "./uuid.ts";
 
@@ -27,11 +27,14 @@ type LegacyStoredState = {
   }>;
 };
 
-export function migrateLegacyState(): Promise<void> {
+export function migrateLegacyState(): Promise<any> {
   return load<LegacyStoredState | null>("::state", null).then(maybeLegacyState => {
     if (!maybeLegacyState) return;
+
     console.log("Found legacy state, migrating...");
+    const storagePromises: Promise<any>[] = [];
     const { enabled, preampMultiplier, filters, presets } = maybeLegacyState;
+
     const newState: EQState = {
       enabled: enabled || false,
       preamp: toDecibel(preampMultiplier || 1.0),
@@ -44,7 +47,7 @@ export function migrateLegacyState(): Promise<void> {
       }))
     };
 
-    save(StorageKeys.EQ_STATE, newState);
+    storagePromises.push(save(StorageKeys.EQ_STATE, newState));
     console.log("Migrated state to new format:", newState);
 
     const newPresets: Preset[] = Object.values(presets).map(p => ({
@@ -60,11 +63,14 @@ export function migrateLegacyState(): Promise<void> {
       preampGain: toDecibel(p.preampMultiplier)
     }));
 
-    save(StorageKeys.PRESETS, newPresets);
+    storagePromises.push(save(StorageKeys.PRESETS, newPresets));
     console.log("Migrated presets to new format:", newPresets);
 
-    clear("::state");
+    storagePromises.push(save("legacyStateBackup", maybeLegacyState));
 
-    save("legacyStateBackup", maybeLegacyState);
+    return Promise.allSettled(storagePromises).then(() => {
+      console.log("Migration complete, clearing legacy state...");
+      return clear("::state");
+    });
   });
 }

@@ -40,7 +40,7 @@ function Toast({
     <ToastWrapper>
       <HBox $alignItems="center" style={{ gap: "6px" }}>
         <Icon glyph={glyph} />
-        <ToastMessage>{messages.map(m => <span key={m}>{m}</span>)}</ToastMessage>
+        <ToastMessage>{messages.map((m, ix) => <span key={`${ix}-${m}`}>{m}</span>)}</ToastMessage>
       </HBox>
     </ToastWrapper>
   );

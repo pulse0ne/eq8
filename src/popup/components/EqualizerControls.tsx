@@ -87,6 +87,8 @@ function EqualizerControls({
     if (selectedIndex === null) {
       if (filters.length) {
         setSelectedIndex(0);
+      } else {
+        setSelectedIndex(null);
       }
     } else {
       if (filters.length > lastFiltersLength) { // user added a new filter
@@ -99,7 +101,7 @@ function EqualizerControls({
   }, [filters, selectedIndex, lastFiltersLength]);
 
   useEffect(() => {
-    if (selectedIndex === null) {
+    if (selectedIndex === null || filters.length === 0) {
       setCurrentParams(DEFAULT_PARAMS);
     } else {
       setCurrentParams(filters[selectedIndex]);
